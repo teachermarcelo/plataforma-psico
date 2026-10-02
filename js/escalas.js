@@ -1,0 +1,15 @@
+import { supabase } from "./supabase.js";
+const list=document.getElementById("scaleList"), modal=document.getElementById("modal"), form=document.getElementById("scaleForm"), msg=document.getElementById("msg");
+let rows=[];
+const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+async function admin(){const {data:{session}}=await supabase.auth.getSession();if(!session?.user)return false;const {data}=await supabase.from("psico_admins").select("user_id").eq("user_id",session.user.id).maybeSingle();return !!data}
+async function load(){if(!(await admin())){document.getElementById("access").hidden=false;return}const {data,error}=await supabase.from("psico_scales").select("*").order("name");if(error){list.innerHTML='<div class="empty">Erro: '+esc(error.message)+'</div>';return}rows=data||[];render()}
+function render(){if(!rows.length){list.innerHTML='<div class="empty"><div>📊</div><h3>Nenhuma escala cadastrada</h3><p>Adicione o Portage ou outra escala autorizada para uso na plataforma.</p></div>';return}list.innerHTML=rows.map(s=>`<article class="scale-card"><div class="scale-icon">📊</div><div class="scale-main"><div class="scale-top"><div><span class="eyebrow">${esc(s.category||"ESCALA")}</span><h3>${esc(s.name)}</h3></div><span class="pill ${s.public_enabled?"on":""}">${s.public_enabled?"Online":"Somente plataforma"}</span></div><p>${esc(s.description||"Sem descrição.")}</p><div class="scale-meta"><span>${Array.isArray(s.items)?s.items.length:0} itens</span>${s.slug?'<span>🔗 aplicação online</span>':""}</div></div></article>`).join("")}
+document.getElementById("newScale").onclick=()=>{form.reset();msg.textContent="";modal.classList.add("open")};document.getElementById("close").onclick=()=>modal.classList.remove("open");modal.onclick=e=>{if(e.target===modal)modal.classList.remove("open")};
+form.onsubmit=async e=>{e.preventDefault();msg.textContent="Salvando...";
+ const name=document.getElementById("name").value.trim();const items=document.getElementById("items").value.split("\n").map(x=>x.trim()).filter(Boolean).map((question,i)=>({id:i+1,question,options:["Sim","Não","Às vezes"]}));
+ const slug=document.getElementById("slug").value.trim().toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-|-$/g,"")||null;
+ const payload={name,slug,category:document.getElementById("category").value.trim()||null,description:document.getElementById("description").value.trim()||null,usage_notes:document.getElementById("notes").value.trim()||null,items,public_enabled:document.getElementById("public_enabled").checked,active:true};
+ const external=document.getElementById("external_url").value.trim();if(external)payload.usage_notes=(payload.usage_notes?payload.usage_notes+"\n":"")+"LINK EXTERNO: "+external;
+ const {error}=await supabase.from("psico_scales").insert(payload);if(error){msg.textContent="Erro: "+error.message;return}modal.classList.remove("open");load()
+};load();
