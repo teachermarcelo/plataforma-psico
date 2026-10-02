@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Questionário de Desenvolvimento 0–5 | Espaço Graça</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+body{background:#f8f2f4}.q-page{max-width:1100px;margin:auto;padding:24px}.clinic{background:#2d2025;color:#fff;border-radius:22px;padding:24px;margin-bottom:16px}.clinic h1{margin:0 0 5px}.clinic p{margin:3px 0;color:#eadce1;font-size:12px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tabs a{padding:10px 15px;border-radius:999px;background:#fff;border:1px solid #e6d8de;color:#553741;text-decoration:none;font-weight:800;font-size:12px}.tabs a.active{background:#91485d;color:#fff}.toolbar{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:0;background:#f8f2f4;padding:8px 0;z-index:5}.card{background:#fff;border:1px solid #eadde2;border-radius:18px;padding:20px;margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field label{font-size:11px;font-weight:900;color:#765b66;text-transform:uppercase}.field input,.field select,.field textarea{width:100%;box-sizing:border-box;margin-top:5px;border:1px solid #ddcfd5;border-radius:10px;padding:10px;font:inherit;background:#fff}.full{grid-column:1/-1}.intro{background:#fbf1f4;border-left:4px solid #91485d;padding:13px;border-radius:10px;font-size:13px;line-height:1.55}.section-head{display:flex;justify-content:space-between;align-items:center;background:#3a2930;color:#fff;border-radius:13px;padding:13px 15px;margin-top:18px}.section-head h2{margin:0;font-size:15px}.question{border:1px solid #eadde2;border-radius:13px;padding:13px;margin-top:9px}.qtop{display:grid;grid-template-columns:42px 1fr 115px;gap:10px;align-items:start}.num{color:#91485d;font-weight:900}.ref{font-size:10px;background:#f5e9ed;border-radius:99px;padding:5px 8px;text-align:center;color:#735964}.choices{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.choices label{border:1px solid #e1d3d9;border-radius:999px;padding:7px 10px;font-size:11px;cursor:pointer}.choices input{margin-right:4px}.qobs{margin-top:9px}.qobs textarea{min-height:55px}.summary textarea{min-height:100px}.notice{font-size:11px;color:#745d66}.footerline{margin-top:20px;border-top:1px solid #ddd0d5;padding-top:12px;font-size:11px;color:#786770}.btn{cursor:pointer}@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.qtop{grid-template-columns:35px 1fr}.ref{grid-column:2}.tabs a{font-size:11px}}
+@media print{body{background:#fff}.q-page{max-width:none;padding:0}.toolbar,.tabs{display:none}.clinic{border-radius:0;break-after:avoid}.card{box-shadow:none}.question{break-inside:avoid}.choices label{border:0;padding-left:0}}
+</style></head>
+<body><main class="q-page" id="questionario">
+<header class="clinic"><h1>ESPAÇO GRAÇA LTDA</h1><p>Rua Jose Bonifacio de Andrade e Silva, 88 · Balsa Nova - PR</p><p>CNPJ: 51.787.023/0001-29</p></header>
+<nav class="tabs"><a href="escalas.html">📊 Escalas</a><a class="active" href="questionario-0-5.html">🧒 Questionário 0–5</a><a href="respostas-identificadas.html">✓ Respostas recebidas</a></nav>
+<div class="toolbar"><button class="btn primary" id="print">🖨 Imprimir</button><button class="btn secondary" id="pdf">⬇ Baixar PDF</button><button class="btn secondary" id="clear">Limpar formulário</button></div>
+<section class="card"><h2>Questionário de Observação do Desenvolvimento – 0 a 5 anos</h2><div class="intro"><strong>Instrumento de observação interna.</strong> Este questionário foi estruturado a partir dos temas do material fornecido e ampliado para contemplar diferentes áreas do desenvolvimento infantil. Ele organiza informações para acompanhamento psicopedagógico e <strong>não substitui avaliação clínica ou instrumento padronizado/validado</strong>.</div></section>
+<section class="card"><h3>1. Identificação</h3><div class="grid">
+<div class="field"><label>Nome da criança</label><input id="child"></div><div class="field"><label>Data de nascimento</label><input id="birth" type="date"></div>
+<div class="field"><label>Idade</label><input id="age" placeholder="Ex.: 3 anos e 4 meses"></div><div class="field"><label>Observador</label><input id="observer"></div>
+<div class="field"><label>Relação com a criança</label><input id="relation" placeholder="Mãe, pai, professor(a), cuidador(a)..."></div><div class="field"><label>Data do preenchimento</label><input id="date" type="date"></div>
+<div class="field full"><label>Contexto observado</label><textarea id="context" placeholder="Casa, escola, clínica, brincadeira livre, rotina..."></textarea></div>
+</div></section>
+<div id="questions"></div>
+<section class="card summary"><h3>Síntese do observador</h3>
+<div class="grid"><div class="field full"><label>Principais pontos fortes da criança</label><textarea id="strengths"></textarea></div>
+<div class="field full"><label>Principais dificuldades ou preocupações</label><textarea id="concerns"></textarea></div>
+<div class="field full"><label>Estratégias que já funcionam bem</label><textarea id="strategies"></textarea></div>
+<div class="field full"><label>Informações importantes não abordadas</label><textarea id="important"></textarea></div></div>
+<div class="footerline">Observador: ______________________________ &nbsp;&nbsp; Data: ____/____/________</div></section>
+</main>
+<script>
+const sections=[
+["Desenvolvimento motor","Movimentos amplos, coordenação, equilíbrio e motricidade fina.",[
+["0–1","Sustenta progressivamente a cabeça e controla o tronco conforme esperado para sua fase."],
+["0–1","Alcança, segura e explora objetos com as mãos."],
+["1–2","Anda e se desloca pelo ambiente com crescente autonomia."],
+["1–2","Manipula objetos, encaixa, empilha ou realiza ações simples com as mãos."],
+["2–3","Corre, sobe, desce e participa de brincadeiras motoras."],
+["2–3","Usa lápis, giz, massinha ou objetos pequenos com crescente controle."],
+["3–4","Salta, corre e muda de direção durante brincadeiras."],
+["3–4","Realiza traços, desenhos ou atividades de recorte com apoio compatível com a idade."],
+["4–5","Coordena movimentos em jogos, brincadeiras e atividades dirigidas."],
+["4–5","Apresenta crescente precisão em desenho, pintura, recorte e manipulação de materiais."]
+]],
+["Comunicação e linguagem","Compreensão, comunicação, linguagem expressiva e interação comunicativa.",[
+["0–1","Responde a vozes, sons ou ao próprio nome em situações habituais."],
+["0–1","Usa sons, gestos, expressões ou outras formas para comunicar necessidades."],
+["1–2","Compreende instruções simples acompanhadas ou não de gestos."],
+["1–2","Utiliza palavras, gestos ou combinações para pedir, chamar ou compartilhar interesse."],
+["2–3","Combina palavras ou utiliza frases curtas para comunicar ideias."],
+["2–3","Compreende perguntas e instruções simples de rotina."],
+["3–4","Conta fatos, experiências ou pequenas histórias com apoio quando necessário."],
+["3–4","Compreende perguntas sobre pessoas, objetos, ações e situações cotidianas."],
+["4–5","Comunica-se com clareza suficiente para ser compreendida em situações habituais."],
+["4–5","Participa de conversas, relata acontecimentos e faz perguntas pertinentes."]
+]],
+["Cognição, atenção e aprendizagem","Brincadeira, exploração, resolução de problemas, memória e atenção.",[
+["0–1","Explora objetos de diferentes maneiras e demonstra curiosidade pelo ambiente."],
+["0–1","Procura objetos parcialmente escondidos ou demonstra expectativa diante de rotinas."],
+["1–2","Imita ações simples e experimenta diferentes formas de usar objetos."],
+["1–2","Mantém-se em uma atividade breve quando há interesse ou apoio do adulto."],
+["2–3","Realiza encaixes, classificações ou jogos simples de acordo com suas possibilidades."],
+["2–3","Segue pequenas sequências de ações em brincadeiras e rotinas."],
+["3–4","Mantém atenção em uma atividade por período compatível com seu interesse."],
+["3–4","Tenta estratégias diferentes quando encontra dificuldade em uma tarefa."],
+["4–5","Recorda informações recentes e utiliza conhecimentos aprendidos em novas situações."],
+["4–5","Participa de atividades com regras simples e consegue concluir tarefas com orientação."]
+]],
+["Socialização e desenvolvimento emocional","Interação, vínculo, brincadeira, emoções e adaptação às situações.",[
+["0–1","Busca ou aceita interação com adultos familiares."],
+["0–1","Demonstra emoções e reage à presença de pessoas conhecidas."],
+["1–2","Demonstra interesse por outras crianças, mesmo que ainda brinque predominantemente em paralelo."],
+["1–2","Aceita ajuda e participa de pequenas rotinas compartilhadas."],
+["2–3","Inicia ou participa de brincadeiras simples com outras pessoas."],
+["2–3","Demonstra emoções e começa a utilizar formas de comunicação para expressar desejos e frustrações."],
+["3–4","Participa de brincadeiras compartilhadas e aceita pequenas regras com apoio."],
+["3–4","Consegue retornar gradualmente à atividade após frustração ou mudança de rotina."],
+["4–5","Compartilha materiais, negocia situações simples e participa de brincadeiras em grupo."],
+["4–5","Reconhece emoções próprias ou de outras pessoas e consegue falar sobre elas com apoio."]
+]],
+["Autonomia, rotina e habilidades adaptativas","Alimentação, higiene, organização, vestir-se e participação nas rotinas.",[
+["0–1","Participa das rotinas de alimentação, higiene e sono com apoio do cuidador."],
+["0–1","Demonstra sinais de necessidades básicas por gestos, sons ou outras formas."],
+["1–2","Participa de pequenas tarefas da rotina, como guardar ou buscar objetos."],
+["1–2","Tenta realizar algumas ações de alimentação ou vestir-se com ajuda."],
+["2–3","Colabora com higiene, alimentação e organização de seus pertences."],
+["2–3","Segue sequências simples de rotina com orientação."],
+["3–4","Realiza algumas tarefas de autocuidado com autonomia crescente."],
+["3–4","Consegue seguir combinados simples relacionados à rotina."],
+["4–5","Realiza tarefas pessoais compatíveis com sua idade com pouca ajuda."],
+["4–5","Organiza materiais e participa de responsabilidades simples do cotidiano."]
+]],
+["Comportamento, regulação e perfil sensorial","Reações a mudanças, estímulos, frustrações e estratégias de regulação.",[
+["0–1","Demonstra diferentes formas de reagir a sons, luzes, toque, movimento ou mudanças no ambiente."],
+["0–1","Aceita gradualmente diferentes experiências sensoriais do cotidiano, quando confortável."],
+["1–2","Demonstra preferências claras por pessoas, objetos, atividades ou formas de brincar."],
+["1–2","Apresenta formas próprias de se acalmar com apoio do cuidador."],
+["2–3","Reage a limites e frustrações e necessita de apoio para regular algumas emoções."],
+["2–3","Tolera pequenas mudanças na rotina com preparação ou apoio."],
+["3–4","Consegue comunicar desconforto, necessidade de pausa ou ajuda em algumas situações."],
+["3–4","Adapta-se progressivamente a mudanças de atividade com antecipação e orientação."],
+["4–5","Utiliza estratégias aprendidas para lidar com espera, frustração ou mudança."],
+["4–5","Apresenta respostas a estímulos sensoriais que podem interferir ou não em atividades e rotinas."]
+]],
+["Contexto escolar e pré-acadêmico – principalmente 4 a 5 anos","Para crianças que frequentam escola ou atividades estruturadas.",[
+["4–5","Participa de atividades dirigidas e compreende combinados simples."],
+["4–5","Demonstra interesse por histórias, livros, desenhos, letras, números ou outros símbolos."],
+["4–5","Reconhece ou utiliza algumas informações básicas aprendidas em atividades cotidianas."],
+["4–5","Consegue realizar tarefas com começo, meio e fim com orientação compatível com sua idade."],
+["4–5","Interage com adultos e colegas em atividades coletivas de forma funcional."]
+]]
+];
+const scale=["Não observado","Ainda não","Às vezes","Frequentemente","Consistente","Não se aplica"];
+let n=0;
+const root=document.getElementById("questions");
+sections.forEach(([title,desc,items])=>{
+let html='<section class="card"><div class="section-head"><h2>'+title+'</h2><span style="font-size:11px">'+desc+'</span></div>';
+items.forEach(([age,q])=>{n++;html+='<article class="question"><div class="qtop"><div class="num">'+n+'</div><div><strong>'+q+'</strong></div><div class="ref">Referência<br>'+age+'</div></div><div class="choices">'+scale.map((s,i)=>'<label><input type="radio" name="q'+n+'" value="'+s+'">'+s+'</label>').join("")+'</div><div class="qobs"><textarea placeholder="Observação específica (opcional)"></textarea></div></article>'});
+html+='</section>';root.insertAdjacentHTML("beforeend",html)
+});
+document.getElementById("print").onclick=()=>window.print();
+document.getElementById("pdf").onclick=()=>{if(window.html2pdf){html2pdf().set({margin:8,filename:"Espaco-Graca-Questionario-Desenvolvimento-0-a-5-anos.pdf",image:{type:"jpeg",quality:.96},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.getElementById("questionario")).save()}};
+document.getElementById("clear").onclick=()=>{if(confirm("Limpar todas as respostas?")){document.querySelectorAll("input,textarea").forEach(e=>{if(e.type==="radio")e.checked=false;else e.value=""})}};
+</script></body></html>
