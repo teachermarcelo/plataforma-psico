@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Materiais | Admin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#172033}
+header{background:#18243a;color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+header a{color:#fff;text-decoration:none;font-weight:bold}.wrap{max-width:1200px;margin:25px auto;padding:0 18px}
+.panel{background:#fff;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 5px 20px #0000000b}
+h1,h2{margin-top:0}.muted{color:#687386}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #d8dde6;border-radius:8px;font:inherit}
+textarea{min-height:90px;resize:vertical}label{font-size:13px;font-weight:bold;display:block;margin:8px 0 6px}
+button{border:0;border-radius:8px;padding:11px 15px;font-weight:bold;cursor:pointer}
+.primary{background:#2563eb;color:#fff}.danger{background:#dc2626;color:#fff}.secondary{background:#e8edf5;color:#172033}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.msg{padding:10px;border-radius:8px;margin-top:12px;display:none}.ok{background:#ecfdf3;color:#067647}.err{background:#fff1f0;color:#b42318}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}.toolbar input{max-width:420px}
+table{width:100%;border-collapse:collapse}th,td{padding:12px 9px;border-bottom:1px solid #edf0f4;text-align:left;vertical-align:top}th{font-size:13px;color:#687386}
+.badge{display:inline-block;background:#eef4ff;color:#2457a6;border-radius:20px;padding:4px 9px;font-size:12px}
+.modal{display:none;position:fixed;inset:0;background:#0008;padding:20px;overflow:auto}.modalbox{max-width:650px;background:#fff;margin:30px auto;border-radius:14px;padding:22px}
+#app{display:none}
+@media(max-width:700px){.grid{grid-template-columns:1fr}table{font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html">← Admin</a>
+  <strong>📚 Materiais</strong>
+  <span id="user"></span>
+</header>
+
+<div id="loading" class="wrap"><div class="panel">Verificando acesso...</div></div>
+
+<main id="app" class="wrap">
+  <div class="panel">
+    <h1>Biblioteca de Materiais</h1>
+    <p class="muted">Cadastre atividades, jogos, fichas, instrumentos e outros materiais. Os arquivos ficam no Storage privado.</p>
+    <button class="primary" id="newBtn">+ Novo material</button>
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <div class="panel">
+    <div class="toolbar">
+      <input id="search" placeholder="Buscar material...">
+      <select id="filterCat"><option value="">Todas as categorias</option></select>
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>Material</th><th>Categoria</th><th>Tipo</th><th>Faixa etária</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div id="modal" class="modal">
+  <div class="modalbox">
+    <h2 id="modalTitle">Novo material</h2>
+    <form id="form">
+      <input type="hidden" id="id">
+      <div class="grid">
+        <div><label>Título *</label><input id="title" required></div>
+        <div><label>Categoria</label><select id="category"></select></div>
+        <div><label>Tipo</label><input id="type" placeholder="PDF, jogo, ficha..."></div>
+        <div><label>Faixa etária</label><input id="age" placeholder="Ex.: 6–8 anos"></div>
+        <div><label>Áreas</label><input id="areas" placeholder="Ex.: atenção, leitura, memória"></div>
+        <div><label>Link externo</label><input id="external" type="url" placeholder="https://..."></div>
+      </div>
+      <label>Descrição</label><textarea id="description"></textarea>
+      <label>Arquivo</label><input id="file" type="file">
+      <small class="muted">Se selecionar um arquivo, ele será enviado para o bucket privado psico-materials.</small>
+      <div class="actions">
+        <button class="primary" type="submit">Salvar</button>
+        <button class="secondary" type="button" id="cancelBtn">Cancelar</button>
+      </div>
+      <div id="formMsg" class="msg"></div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { supabase } from "../js/supabase.js";
+
+const loading=document.getElementById("loading"),app=document.getElementById("app");
+const rows=document.getElementById("rows"),search=document.getElementById("search"),filterCat=document.getElementById("filterCat");
+const modal=document.getElementById("modal"),form=document.getElementById("form"),formMsg=document.getElementById("formMsg");
+let categories=[],materials=[];
+
+function msg(el,text,ok=false){el.textContent=text;el.className="msg "+(ok?"ok":"err");el.style.display="block"}
+function hide(el){el.style.display="none"}
+
+async function guard(){
+ const {data:{session}}=await supabase.auth.getSession();
+ if(!session){location.href="index.html";return null}
+ const {data,error}=await supabase.from("psico_admins").select("display_name").eq("user_id",session.user.id).maybeSingle();
+ if(error||!data){await supabase.auth.signOut();location.href="index.html";return null}
+ document.getElementById("user").textContent=data.display_name||session.user.email;
+ return session
+}
+
+async function loadCategories(){
+ const {data,error}=await supabase.from("psico_material_categories").select("*").order("name");
+ if(error){msg(document.getElementById("msg"),error.message);return}
+ categories=data||[];
+ filterCat.innerHTML='<option value="">Todas as categorias</option>'+categories.map(c=>'<option value="'+c.id+'">'+escapeHtml(c.name)+'</option>').join("");
+ document.getElementById("category").innerHTML='<option value="">Sem categoria</option>'+categories.map(c=>'<option value="'+c.id+'">'+escapeHtml(c.name)+'</option>').join("");
+}
+
+async function loadMaterials(){
+ const {data,error}=await supabase.from("psico_materials").select("*").order("created_at",{ascending:false});
+ if(error){msg(document.getElementById("msg"),error.message);return}
+ materials=data||[];render()
+}
+
+function render(){
+ const q=search.value.toLowerCase().trim(),cat=filterCat.value;
+ const list=materials.filter(m=>(!q||[m.title,m.description,m.material_type,m.areas,m.age_range].join(" ").toLowerCase().includes(q))&&(!cat||m.category_id===cat));
+ rows.innerHTML=list.length?list.map(m=>{
+  const c=categories.find(x=>x.id===m.category_id);
+  return '<tr><td><strong>'+escapeHtml(m.title)+'</strong><br><small class="muted">'+escapeHtml(m.description||"")+'</small></td><td>'+(c?'<span class="badge">'+escapeHtml(c.name)+'</span>':'—')+'</td><td>'+escapeHtml(m.material_type||"—")+'</td><td>'+escapeHtml(m.age_range||"—")+'</td><td>'+ (m.active?"Ativo":"Inativo")+'</td><td><div class="actions"><button class="secondary" data-edit="'+m.id+'">Editar</button><button class="secondary" data-view="'+m.id+'">Abrir</button><button class="danger" data-del="'+m.id+'">Excluir</button></div></td></tr>'
+ }).join(""):'<tr><td colspan="6" class="muted">Nenhum material cadastrado.</td></tr>';
+}
+
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[s]))}
+
+function openNew(){
+ form.reset();document.getElementById("id").value="";document.getElementById("modalTitle").textContent="Novo material";hide(formMsg);modal.style.display="block";
+}
+function openEdit(m){
+ document.getElementById("id").value=m.id;document.getElementById("title").value=m.title||"";
+ document.getElementById("category").value=m.category_id||"";document.getElementById("type").value=m.material_type||"";
+ document.getElementById("age").value=m.age_range||"";document.getElementById("areas").value=m.areas||"";
+ document.getElementById("external").value=m.external_url||"";document.getElementById("description").value=m.description||"";
+ document.getElementById("file").value="";document.getElementById("modalTitle").textContent="Editar material";hide(formMsg);modal.style.display="block";
+}
+
+async function save(e){
+ e.preventDefault();hide(formMsg);
+ const id=document.getElementById("id").value,title=document.getElementById("title").value.trim(),file=document.getElementById("file").files[0];
+ let filePath=null;
+ if(file){
+  const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  filePath=Date.now()+"_"+crypto.randomUUID()+"_"+safe;
+  const up=await supabase.storage.from("psico-materials").upload(filePath,file,{upsert:false});
+  if(up.error){msg(formMsg,"Erro no upload: "+up.error.message);return}
+ }
+ const payload={
+  title,category_id:document.getElementById("category").value||null,
+  material_type:document.getElementById("type").value.trim()||null,
+  age_range:document.getElementById("age").value.trim()||null,
+  areas:document.getElementById("areas").value.trim()||null,
+  external_url:document.getElementById("external").value.trim()||null,
+  description:document.getElementById("description").value.trim()||null
+ };
+ if(filePath)payload.file_path=filePath;
+ let result;
+ if(id) result=await supabase.from("psico_materials").update(payload).eq("id",id);
+ else result=await supabase.from("psico_materials").insert(payload);
+ if(result.error){if(filePath)await supabase.storage.from("psico-materials").remove([filePath]);msg(formMsg,result.error.message);return}
+ modal.style.display="none";msg(document.getElementById("msg"),"Material salvo com sucesso.",true);await loadMaterials();
+}
+
+async function removeMaterial(id){
+ if(!confirm("Excluir este material?"))return;
+ const m=materials.find(x=>x.id===id);
+ const {error}=await supabase.from("psico_materials").delete().eq("id",id);
+ if(error){msg(document.getElementById("msg"),error.message);return}
+ if(m?.file_path)await supabase.storage.from("psico-materials").remove([m.file_path]);
+ msg(document.getElementById("msg"),"Material excluído.",true);await loadMaterials();
+}
+
+async function openMaterial(m){
+ if(m.external_url){window.open(m.external_url,"_blank");return}
+ if(!m.file_path){alert("Este material não possui arquivo nem link externo.");return}
+ const {data,error}=await supabase.storage.from("psico-materials").createSignedUrl(m.file_path,300);
+ if(error){alert(error.message);return}
+ window.open(data.signedUrl,"_blank");
+}
+
+document.getElementById("newBtn").onclick=openNew;
+document.getElementById("cancelBtn").onclick=()=>modal.style.display="none";
+form.onsubmit=save;search.oninput=render;filterCat.onchange=render;
+rows.onclick=e=>{
+ const b=e.target.closest("button");if(!b)return;
+ const id=b.dataset.edit||b.dataset.del||b.dataset.view,m=materials.find(x=>x.id===id);
+ if(b.dataset.edit)openEdit(m);else if(b.dataset.del)removeMaterial(id);else if(b.dataset.view)openMaterial(m);
+};
+window.onclick=e=>{if(e.target===modal)modal.style.display="none"};
+
+const session=await guard();
+if(session){await loadCategories();await loadMaterials();loading.style.display="none";app.style.display="block";}
+</script>
+</body>
+</html>
