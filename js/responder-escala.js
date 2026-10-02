@@ -1,39 +1,19 @@
 import { PORTAGE_ITEMS } from "./portage-data.js";
 const ENDPOINT="https://rvgcniaowzmsudzliozf.supabase.co/functions/v1/psico-scale-response";
 const token=new URLSearchParams(location.search).get("token");
-const app=document.getElementById("app"),loading=document.getElementById("loading"),errorBox=document.getElementById("error"),questionBox=document.getElementById("questionBox"),done=document.getElementById("done"),bar=document.getElementById("bar"),progress=document.getElementById("progress"),counter=document.getElementById("counter"),area=document.getElementById("area"),question=document.getElementById("question"),options=document.getElementById("options"),back=document.getElementById("back"),next=document.getElementById("next"),finish=document.getElementById("finish");
-let items=[],answers={},index=0,scaleName="";
+const $=id=>document.getElementById(id), loading=$("loading"),app=$("app"),errorBox=$("error"),identity=$("identity"),questionBox=$("questionBox"),done=$("done"),bar=$("bar"),progress=$("progress"),counter=$("counter"),area=$("area"),question=$("question"),options=$("options"),back=$("back"),next=$("next"),finish=$("finish"),ageTabs=$("ageTabs"),saveState=$("saveState");
+let items=[],answers={},index=0,scaleName="",currentAge="0 a 1 ano",data={};
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const ages=["0 a 1 ano","1 a 2 anos","2 a 3 anos","3 a 4 anos","4 a 5 anos","5 a 6 anos"];
 function showError(t){loading.hidden=true;app.hidden=true;errorBox.hidden=false;errorBox.innerHTML="<strong>Não foi possível abrir esta avaliação.</strong><br>"+esc(t)}
-async function start(){
- if(!token)return showError("O link da avaliação está incompleto.");
- try{
-  const r=await fetch(ENDPOINT+"?token="+encodeURIComponent(token));const d=await r.json();
-  if(!r.ok)throw new Error(d.error||"Link inválido.");
-  scaleName=d.scale?.name||"Avaliação";
-  items=(scaleName.toLowerCase().includes("portage")?PORTAGE_ITEMS:(Array.isArray(d.scale?.items)?d.scale.items:[]));
-  if(!items.length)throw new Error("Esta escala ainda não possui itens configurados.");
-  document.getElementById("scaleName").textContent=scaleName;
-  document.getElementById("intro").textContent=d.scale?.description||"Responda às perguntas conforme a sua observação da criança.";
-  loading.hidden=true;app.hidden=false;render();
- }catch(e){showError(e.message)}
-}
-function render(){
- const total=items.length,pct=Math.round((index/total)*100),it=items[index],chosen=answers[index];
- area.textContent=it.area||"Avaliação";question.textContent=it.question;counter.textContent=(index+1)+" de "+total;progress.textContent=pct+"%";bar.style.width=Math.max(3,pct)+"%";
- options.innerHTML=(it.options||["S","N","AV"]).map(o=>{const labels={S:"Sim",N:"Não",AV:"Às vezes"};return `<button type="button" class="answer ${chosen===o?"selected":""}" data-value="${esc(o)}"><span class="dot">${esc(o)}</span><span><strong>${labels[o]||o}</strong><small>${o==="S"?"Alcançou":o==="N"?"Ainda não alcançou":"Às vezes"}</small></span></button>`}).join("");
- options.querySelectorAll(".answer").forEach(b=>b.onclick=()=>{answers[index]=b.dataset.value;render();});
- back.disabled=index===0;next.hidden=index===total-1;finish.hidden=index!==total-1;next.disabled=chosen==null;finish.disabled=chosen==null;
-}
+async function api(method,body){const r=await fetch(ENDPOINT+"?token="+encodeURIComponent(token),{method,headers:{"Content-Type":"application/json"},...(body?{body:JSON.stringify(body)}:{})});const d=await r.json();if(!r.ok)throw new Error(d.error||"Erro");return d}
+async function start(){if(!token)return showError("O link da avaliação está incompleto.");try{data=await api("GET");scaleName=data.scale?.name||"Avaliação";document.title=scaleName+" | Espaço Graça";$("scaleName").textContent=scaleName;$("intro").textContent=data.scale?.description||"Responda conforme sua observação da criança.";if(data.patient?.full_name){$("patientName").textContent=data.patient.full_name;$("patientConfirm").value=data.patient_confirm_name||"";$("patientPhone").value=data.patient_confirm_phone||""}$("respondentName").value=data.respondent_name||"";$("respondentPhone").value=data.respondent_phone||"";const saved=data.response_data||{};if(saved.answers)answers=saved.answers;items=scaleName.toLowerCase().includes("portage")?PORTAGE_ITEMS:(Array.isArray(data.scale?.items)?data.scale.items:[]);if(!items.length)throw new Error("Esta escala ainda não possui itens configurados.");loading.hidden=true;app.hidden=false;renderAgeTabs();render();}catch(e){showError(e.message)}}
+function renderAgeTabs(){ageTabs.innerHTML=ages.map(a=>{const n=items.filter(x=>x.age_range===a).length;return '<button type="button" class="age-tab '+(a===currentAge?"active":"")+'" data-age="'+esc(a)+'"><strong>'+esc(a)+'</strong><small>'+n+" habilidades</small></button>"}).join("");ageTabs.querySelectorAll("button").forEach(b=>b.onclick=()=>{currentAge=b.dataset.age;index=0;renderAgeTabs();render()})}
+function ageItems(){return items.filter(x=>x.age_range===currentAge)}
+function render(){const list=ageItems();if(!list.length){question.textContent="Nenhuma habilidade cadastrada nesta faixa.";return}const total=list.length,pct=Math.round((index/total)*100),it=list[index],key=it.number,chosen=answers[key];area.textContent=(it.area||"Avaliação")+" · "+currentAge;question.textContent=it.question;counter.textContent=(index+1)+" de "+total;progress.textContent=pct+"%";bar.style.width=Math.max(3,pct)+"%";options.innerHTML=(it.options||["S","N","AV"]).map(o=>{const labels={S:"Sim",N:"Não",AV:"Às vezes"};return '<button type="button" class="answer '+(chosen===o?"selected":"")+'" data-value="'+esc(o)+'"><span class="dot">'+esc(o)+'</span><span><strong>'+labels[o]+'</strong><small>'+({S:"Alcançou",N:"Ainda não alcançou",AV:"Às vezes"}[o])+'</small></span></button>'}).join("");options.querySelectorAll(".answer").forEach(b=>b.onclick=()=>{answers[key]=b.dataset.value;saveProgress();render()});back.disabled=index===0;next.hidden=index===total-1;finish.hidden=!(currentAge===ages[ages.length-1]&&index===total-1);next.disabled=chosen==null;finish.disabled=Object.keys(answers).length===0;saveState.textContent="As respostas são salvas automaticamente."}
+async function saveProgress(){const identityData={patient_confirm_name:$("patientConfirm").value.trim(),patient_confirm_phone:$("patientPhone").value.trim(),respondent_name:$("respondentName").value.trim(),respondent_phone:$("respondentPhone").value.trim(),response_data:{answers}};if(!identityData.patient_confirm_name||!identityData.patient_confirm_phone||!identityData.respondent_name||!identityData.respondent_phone)return;saveState.textContent="Salvando...";try{await api("POST",{mode:"save",...identityData});saveState.textContent="✓ Salvo automaticamente";}catch(e){saveState.textContent="Não foi possível salvar agora."}}
+$("identityForm").onsubmit=e=>{e.preventDefault();identity.hidden=true;questionBox.hidden=false;saveProgress();render()};
 back.onclick=()=>{if(index>0){index--;render()}};
-next.onclick=()=>{if(answers[index]!=null&&index<items.length-1){index++;render()}};
-finish.onclick=async()=>{
- if(answers[index]==null)return;
- finish.disabled=true;finish.textContent="Enviando...";
- const response_data=items.map((it,i)=>({number:it.number,area:it.area,age_range:it.age_range,question:it.question,answer:answers[i]??null}));
- const byArea={};for(const r of response_data){if(!byArea[r.area])byArea[r.area]={S:0,N:0,AV:0,total:0};if(r.answer)byArea[r.area][r.answer]++;byArea[r.area].total++;}
- const r=await fetch(ENDPOINT+"?token="+encodeURIComponent(token),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({response_data,result_summary:byArea,notes:"Aplicação online"} )});
- const d=await r.json();if(!r.ok){finish.disabled=false;finish.textContent="Finalizar avaliação";alert(d.error||"Erro ao enviar.");return}
- questionBox.hidden=true;done.hidden=false;
-};
+next.onclick=()=>{if(answers[ageItems()[index].number]!=null&&index<ageItems().length-1){index++;render()}};
+finish.onclick=async()=>{finish.disabled=true;finish.textContent="Enviando...";const response_data=items.map(it=>({number:it.number,area:it.area,age_range:it.age_range,question:it.question,answer:answers[it.number]??null}));const byAge={};for(const r of response_data){byAge[r.age_range]??={S:0,N:0,AV:0,total:0};if(r.answer)byAge[r.age_range][r.answer]++;byAge[r.age_range].total++}try{await api("POST",{mode:"finalize",patient_confirm_name:$("patientConfirm").value.trim(),patient_confirm_phone:$("patientPhone").value.trim(),respondent_name:$("respondentName").value.trim(),respondent_phone:$("respondentPhone").value.trim(),response_data,result_summary:byAge,notes:"Aplicação online"});questionBox.hidden=true;done.hidden=false}catch(e){finish.disabled=false;finish.textContent="Finalizar avaliação";alert(e.message)}};
 start();
