@@ -83,16 +83,31 @@ form.addEventListener("submit",async e=>{
     birth_date:document.getElementById("birth_date").value||null,
     sex:document.getElementById("sex").value||null,
     cpf:document.getElementById("cpf").value.trim()||null,
+    rg:document.getElementById("rg").value.trim()||null,
     phone:document.getElementById("phone").value.trim()||null,
     email:document.getElementById("email").value.trim()||null,
+    address:document.getElementById("address").value.trim()||null,
     city:document.getElementById("city").value.trim()||null,
     state:document.getElementById("state").value.trim()||null,
     school_name:document.getElementById("school_name").value.trim()||null,
     school_grade:document.getElementById("school_grade").value.trim()||null,
-    notes:document.getElementById("notes").value.trim()||null
+    notes:document.getElementById("notes").value.trim()||null,
+    photo_path:document.getElementById("photo_path").value.trim()||null
   };
   if(!payload.full_name){message.textContent="Informe o nome completo.";return;}
   const {data,error}=await supabase.from("psico_patients").insert(payload).select().single();
+  if(!error && data){
+    const guardians=[];
+    for(const n of [1,2]){
+      const name=document.getElementById("g"+n+"_name").value.trim();
+      if(!name) continue;
+      const g={full_name:name,relationship:document.getElementById("g"+n+"_relationship").value.trim()||null,cpf:document.getElementById("g"+n+"_cpf").value.trim()||null,phone:document.getElementById("g"+n+"_phone").value.trim()||null,email:document.getElementById("g"+n+"_email").value.trim()||null};
+      const gr=await supabase.from("psico_guardians").insert(g).select().single();
+      if(gr.error){message.textContent="Paciente salvo, mas houve erro no responsável: "+gr.error.message;return}
+      guardians.push({patient_id:data.id,guardian_id:gr.data.id,is_primary:n===1,legal_responsible:document.getElementById("g"+n+"_legal").value==="true"});
+    }
+    if(guardians.length){const rr=await supabase.from("psico_patient_guardians").insert(guardians);if(rr.error){message.textContent="Paciente salvo, mas não foi possível vincular os responsáveis: "+rr.error.message;return}}
+  }
   if(error){message.textContent="Erro ao salvar: "+error.message;return;}
   patients.push(data);
   patients.sort((a,b)=>a.full_name.localeCompare(b.full_name));
