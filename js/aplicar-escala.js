@@ -6,9 +6,11 @@ async function load(){if(!(await admin())){document.getElementById("access").hid
  const p=await supabase.from("psico_patients").select("id,full_name,preferred_name,birth_date").eq("status","active").order("full_name");
  const s=await supabase.from("psico_scales").select("id,name,description,public_enabled,items").eq("active",true).order("name");
  if(p.error||s.error){msg.textContent="Erro ao carregar dados.";return}
+ const activePatient=new URLSearchParams(location.search).get("patient_id")||sessionStorage.getItem("psico_patient_id")||localStorage.getItem("psico_patient_id");if(activePatient){sessionStorage.setItem("psico_patient_id",activePatient);localStorage.setItem("psico_patient_id",activePatient)}
  patientSelect.innerHTML='<option value="">Selecione o paciente...</option>'+p.data.map(x=>`<option value="${x.id}">${esc(x.full_name)}${x.preferred_name?" · "+esc(x.preferred_name):""}</option>`).join("");
  scaleSelect.innerHTML='<option value="">Selecione a escala...</option>'+s.data.map(x=>`<option value="${x.id}">${esc(x.name)} — ${Array.isArray(x.items)?x.items.length:0} itens</option>`).join("");
 }
+if(activePatient) patientSelect.value=activePatient;
 function updateAgeField(){const id=scaleSelect.value;const opt=scaleSelect.options[scaleSelect.selectedIndex];const name=(opt?.text||"").toLowerCase();const ageScale=!!id && name.includes("portage");ageWrap.style.display=ageScale?"block":"none";ageSelect.required=ageScale;if(!ageScale)ageSelect.value="";document.getElementById("ageHint").textContent="Somente o Guia Portage utiliza faixa etária na aplicação.";} 
 scaleSelect.addEventListener("change",async()=>{updateAgeField();const id=scaleSelect.value;if(!id){document.getElementById("scaleInfo").textContent="Escolha uma escala para ver detalhes.";return}const {data}=await supabase.from("psico_scales").select("name,description,public_enabled,items").eq("id",id).single();document.getElementById("scaleInfo").innerHTML=`<strong>${esc(data.name)}</strong><br>${esc(data.description||"Sem descrição.")}<br><small>${Array.isArray(data.items)?data.items.length:0} itens · ${data.public_enabled?"aplicação online disponível":"aplicação online ainda não ativada"}</small>`;});
 updateAgeField();
