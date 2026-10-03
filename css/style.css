@@ -243,3 +243,65 @@
     overflow-y:hidden !important;
   }
 }
+
+/* PALETA OFICIAL — LAVANDA / LILÁS / ROXO / MAGENTA */
+:root{
+  --wine:#a407f9;
+  --wine-2:#b85cf2;
+  --wine-3:#d997f5;
+  --wine-soft:#ead9f7;
+  --sidebar-bg:#5b2775;
+  --brand-lavender:#cabfe7;
+  --brand-lilac:#d997f5;
+  --brand-purple:#a407f9;
+  --brand-magenta:#8f00e8;
+}
+/* Sidebar com a nova paleta */
+.sidebar{
+  background:linear-gradient(180deg,#4b245f 0%,#321b43 100%) !important;
+  scrollbar-color:#d997f5 #321b43 !important;
+}
+.sidebar::-webkit-scrollbar-track{background:#321b43 !important}
+.sidebar::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#d997f5,#a407f9) !important;
+  border-color:#321b43 !important;
+}
+.sidebar::-webkit-scrollbar-thumb:hover{
+  background:#e7b7f9 !important;
+}
+.sidebar nav a,
+.sidebar .admin-link a{
+  color:#f5eafd !important;
+}
+.sidebar nav a:hover,
+.sidebar .admin-link a:hover{
+  background:linear-gradient(90deg,#a407f9,#c25af0) !important;
+  border-color:#d997f5 !important;
+  color:#fff !important;
+  box-shadow:0 5px 14px rgba(164,7,249,.28) !important;
+}
+.sidebar nav a:active,
+.sidebar .admin-link a:active{
+  background:#d997f5 !important;
+  color:#321b43 !important;
+}
+.sidebar nav a.active{
+  background:linear-gradient(90deg,#8f00e8,#a407f9) !important;
+  border-color:#d997f5 !important;
+  box-shadow:inset 4px 0 #e7b7f9,0 5px 15px rgba(164,7,249,.25) !important;
+}
+.sidebar nav a.active:hover{
+  background:linear-gradient(90deg,#a407f9,#c25af0) !important;
+}
+/* Botões e elementos principais */
+.btn-primary,.primary,.btn-main{
+  background:linear-gradient(135deg,#a407f9,#8f00e8) !important;
+  border-color:#a407f9 !important;
+}
+.btn-primary:hover,.primary:hover,.btn-main:hover{
+  background:linear-gradient(135deg,#c25af0,#a407f9) !important;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:#a407f9 !important;
+  box-shadow:0 0 0 3px rgba(164,7,249,.13) !important;
+}
