@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-const patientId=new URLSearchParams(location.search).get("patient_id")||sessionStorage.getItem("psico_patient_id");
+const patientId=new URLSearchParams(location.search).get("patient_id")||(sessionStorage.getItem("psico_patient_id")||localStorage.getItem("psico_patient_id"));
 const list=document.getElementById("assessmentList"), form=document.getElementById("assessmentForm"), msg=document.getElementById("assessmentMessage"), patientName=document.getElementById("patientName"), patientBox=document.getElementById("patientBox"), newBtn=document.getElementById("newAssessmentBtn"), modal=document.getElementById("assessmentModal");
 let assessments=[];
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
@@ -12,7 +12,7 @@ async function load(){
   supabase.from("psico_assessments").select("*").eq("patient_id",patientId).order("assessment_date",{ascending:false})
  ]);
  if(p.error){patientBox.textContent="Paciente não encontrado.";return}
- patientName.textContent=p.data.full_name;sessionStorage.setItem("psico_patient_id",patientId);document.getElementById("contextName").textContent=p.data.full_name;document.getElementById("ctxCentral").href="paciente-central.html?patient_id="+patientId;document.getElementById("ctxAnam").href="anamnese.html?patient_id="+patientId;document.getElementById("ctxResp").href="responsaveis.html?patient_id="+patientId;document.getElementById("ctxInterv").href="intervencao.html?patient_id="+patientId;document.getElementById("ctxSess").href="sessoes.html?patient_id="+patientId;document.getElementById("ctxEvol").href="evolucao.html?patient_id="+patientId;patientBox.innerHTML=`<strong>${esc(p.data.full_name)}</strong><br><span>${esc(p.data.preferred_name||"")}</span>`;
+ patientName.textContent=p.data.full_name;(sessionStorage.setItem("psico_patient_id",patientId),localStorage.setItem("psico_patient_id",patientId));document.getElementById("contextName").textContent=p.data.full_name;document.getElementById("ctxCentral").href="paciente-central.html?patient_id="+patientId;document.getElementById("ctxAnam").href="anamnese.html?patient_id="+patientId;document.getElementById("ctxResp").href="responsaveis.html?patient_id="+patientId;document.getElementById("ctxInterv").href="intervencao.html?patient_id="+patientId;document.getElementById("ctxSess").href="sessoes.html?patient_id="+patientId;document.getElementById("ctxEvol").href="evolucao.html?patient_id="+patientId;patientBox.innerHTML=`<strong>${esc(p.data.full_name)}</strong><br><span>${esc(p.data.preferred_name||"")}</span>`;
  if(a.error){list.innerHTML='<div class="empty"><h3>Não foi possível carregar as avaliações.</h3></div>';return}
  assessments=a.data||[];render();
 }
