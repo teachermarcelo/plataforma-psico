@@ -140,7 +140,7 @@ list.addEventListener("click",async e=>{
    if(r.error){alert("Não foi possível atualizar: "+r.error.message);return} Object.assign(p,r.data);render();return;
  }
  const del=e.target.closest(".delete-patient"); if(del){const p=patients.find(x=>x.id===decodeURIComponent(del.dataset.id));if(!p)return;
-   const confirmName=prompt(\`EXCLUSÃO DEFINITIVA\\n\\nIsso apagará o paciente e os registros vinculados. Esta ação não pode ser desfeita.\\n\\nDigite o nome completo do paciente para confirmar:\\n${p.full_name}\`);
+   const confirmName=prompt(`EXCLUSÃO DEFINITIVA\n\nIsso apagará o paciente e os registros vinculados. Esta ação não pode ser desfeita.\n\nDigite o nome completo do paciente para confirmar:\n${p.full_name}`);
    if(confirmName!==p.full_name)return;
    const pf=await supabase.from("psico_patient_files").select("file_path").eq("patient_id",p.id); const docs=await supabase.from("psico_documents").select("file_path").eq("patient_id",p.id); const photo=p.photo_path?[p.photo_path]:[]; const patientFiles=(pf.data||[]).map(x=>x.file_path).filter(Boolean); const docFiles=(docs.data||[]).map(x=>x.file_path).filter(Boolean); if(patientFiles.length||photo.length)await supabase.storage.from("psico-patient-files").remove([...patientFiles,...photo]); if(docFiles.length)await supabase.storage.from("psico-patient-documents").remove(docFiles); const r=await supabase.from("psico_patients").delete().eq("id",p.id);
    if(r.error){alert("Não foi possível excluir: "+r.error.message);return}
