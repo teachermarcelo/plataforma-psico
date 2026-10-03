@@ -17,4 +17,35 @@
 <main class="main"><header class="topbar"><div><p class="eyebrow">DOCUMENTAÇÃO</p><h1>Documentos</h1></div><a class="btn secondary" href="index.html">← Dashboard</a></header>
 <section class="context"><span>👤 PACIENTE ATIVO</span><strong id="contextName">Nenhum paciente selecionado</strong><small id="contextHint">Selecione um paciente no prontuário para trabalhar com os documentos vinculados.</small><div id="patientChooser" style="display:none;margin-top:10px"><select id="patientSelect" class="input" style="max-width:420px"><option value="">Selecione um paciente...</option></select></div><div class="context-actions"><a class="btn secondary" id="ctxCentral">Prontuário</a><a class="btn secondary" id="ctxAnam">Anamnese</a><a class="btn secondary" id="ctxInterv">Intervenção</a><a class="btn secondary" id="ctxResp">Responsáveis</a><a class="btn secondary" id="ctxSess">Sessões</a><a class="btn secondary" id="ctxEvol">Evolução</a></div></section><section class="welcome"><div><p class="eyebrow">MÓDULO</p><h2>📄 Documentos</h2><p>Organize documentos, relatórios, termos e arquivos da plataforma.</p></div><a class="btn" href="admin/documentos.html">Área de documentos →</a></section>
 <section class="panel" style="margin-top:20px"><div class="panel-head"><div><p class="eyebrow">PLATAFORMA</p><h3>Área preparada</h3></div></div><div class="empty" style="padding:55px 20px"><div>📄</div><h3>Este módulo já está disponível</h3><p>A interface foi criada e está pronta para receber os dados do Supabase.</p></div></section>
-<footer>Plataforma Psicopedagógica · Documentos</footer></main></div><script>const pid=new URLSearchParams(location.search).get("patient_id")||(sessionStorage.getItem("psico_patient_id")||localStorage.getItem("psico_patient_id"));if(pid){(sessionStorage.setItem("psico_patient_id",pid),localStorage.setItem("psico_patient_id",pid));document.getElementById("ctxCentral").href="paciente-central.html?patient_id="+pid;document.getElementById("ctxAnam").href="anamnese.html?patient_id="+pid;document.getElementById("ctxInterv").href="intervencao.html?patient_id="+pid;document.getElementById("ctxSess").href="sessoes.html?patient_id="+pid;document.getElementById("ctxResp").href="responsaveis.html?patient_id="+pid;document.getElementById("ctxEvol").href="evolucao.html?patient_id="+pid;fetch("js/supabase.js").catch(()=>{})}</script><script type="module">import {supabase} from "./js/supabase.js";const pid=new URLSearchParams(location.search).get("patient_id")||(sessionStorage.getItem("psico_patient_id")||localStorage.getItem("psico_patient_id"));if(pid){(sessionStorage.setItem("psico_patient_id",pid),localStorage.setItem("psico_patient_id",pid));const r=await supabase.from("psico_patients").select("full_name").eq("id",pid).single();if(r.data){document.getElementById("contextName").textContent=r.data.full_name;document.getElementById("ctxCentral").href="paciente-central.html?patient_id="+pid;document.getElementById("ctxAnam").href="anamnese.html?patient_id="+pid;document.getElementById("ctxInterv").href="intervencao.html?patient_id="+pid;document.getElementById("ctxSess").href="sessoes.html?patient_id="+pid;document.getElementById("ctxResp").href="responsaveis.html?patient_id="+pid;document.getElementById("ctxEvol").href="evolucao.html?patient_id="+pid}}else{document.getElementById("patientChooser").style.display="block";const q=await supabase.from("psico_patients").select("id,full_name").order("full_name");if(q.data){q.data.forEach(p=>{const o=document.createElement("option");o.value=p.id;o.textContent=p.full_name;document.getElementById("patientSelect").appendChild(o)})}document.getElementById("patientSelect").onchange=e=>{if(e.target.value){sessionStorage.setItem("psico_patient_id",e.target.value);location.href="documentos.html?patient_id="+encodeURIComponent(e.target.value)}}}}}</script></body></html>
+<footer>Plataforma Psicopedagógica · Documentos</footer></main></div><script>const pid=new URLSearchParams(location.search).get("patient_id")||(sessionStorage.getItem("psico_patient_id")||localStorage.getItem("psico_patient_id"));if(pid){(sessionStorage.setItem("psico_patient_id",pid),localStorage.setItem("psico_patient_id",pid));document.getElementById("ctxCentral").href="paciente-central.html?patient_id="+pid;document.getElementById("ctxAnam").href="anamnese.html?patient_id="+pid;document.getElementById("ctxInterv").href="intervencao.html?patient_id="+pid;document.getElementById("ctxSess").href="sessoes.html?patient_id="+pid;document.getElementById("ctxResp").href="responsaveis.html?patient_id="+pid;document.getElementById("ctxEvol").href="evolucao.html?patient_id="+pid;fetch("js/supabase.js").catch(()=>{})}</script><script type="module">
+import {supabase} from "./js/supabase.js";
+const pid=new URLSearchParams(location.search).get("patient_id")||sessionStorage.getItem("psico_patient_id")||localStorage.getItem("psico_patient_id");
+const setLinks=id=>{
+  sessionStorage.setItem("psico_patient_id",id);
+  localStorage.setItem("psico_patient_id",id);
+  ["ctxCentral","ctxAnam","ctxInterv","ctxResp","ctxSess","ctxEvol"].forEach(x=>document.getElementById(x).href={
+    ctxCentral:"paciente-central.html",ctxAnam:"anamnese.html",ctxInterv:"intervencao.html",ctxResp:"responsaveis.html",ctxSess:"sessoes.html",ctxEvol:"evolucao.html"
+  }[x]+"?patient_id="+encodeURIComponent(id));
+};
+if(pid){
+  setLinks(pid);
+  const r=await supabase.from("psico_patients").select("full_name").eq("id",pid).maybeSingle();
+  if(r.data){
+    document.getElementById("contextName").textContent=r.data.full_name;
+    document.getElementById("contextHint").textContent="Documentos vinculados a este prontuário.";
+  }else{
+    sessionStorage.removeItem("psico_patient_id");localStorage.removeItem("psico_patient_id");
+  }
+}
+if(!pid || document.getElementById("contextName").textContent==="Nenhum paciente selecionado"){
+  document.getElementById("patientChooser").style.display="block";
+  const q=await supabase.from("psico_patients").select("id,full_name").order("full_name");
+  if(q.data) q.data.forEach(p=>{
+    const o=document.createElement("option");o.value=p.id;o.textContent=p.full_name;
+    document.getElementById("patientSelect").appendChild(o);
+  });
+  document.getElementById("patientSelect").onchange=e=>{
+    if(e.target.value){setLinks(e.target.value);location.href="documentos.html?patient_id="+encodeURIComponent(e.target.value)}
+  };
+}
+</script></body></html>
