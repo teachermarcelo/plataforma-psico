@@ -9,8 +9,10 @@ const access = document.getElementById("accessMessage");
 const newBtn = document.getElementById("newPatientBtn");
 const closeBtn = document.getElementById("closePatientBtn");
 const count = document.getElementById("patientCount");
+const modalTitle=document.getElementById("modalTitle"), modalEyebrow=document.getElementById("modalEyebrow"), savePatientBtn=document.getElementById("savePatientBtn");
 
 let patients = [];
+let editingId = null;
 
 async function isAdmin(){
   const { data:{session} } = await supabase.auth.getSession();
@@ -44,7 +46,7 @@ function render(){
         <small>${p.city?esc(p.city):""}${p.school_grade?" · "+esc(p.school_grade):""}</small>
       </div>
       <span class="status ${p.status==="archived"?"archived":""}">${p.status==="archived"?"Arquivado":"Ativo"}</span>
-      <a class="btn small" href="paciente.html?id=${encodeURIComponent(p.id)}">Prontuário →</a>
+      <div><a class="btn small" href="paciente.html?id=${encodeURIComponent(p.id)}">Prontuário →</a> <button class="btn small secondary edit-patient" data-id="${encodeURIComponent(p.id)}" type="button">Editar</button></div>
     </article>`).join("");
 }
 
@@ -66,13 +68,18 @@ async function load(){
   render();
 }
 
-function openModal(){
+function openModal(patient=null){
   form.reset();
+  editingId=patient?.id||null;
+  modalEyebrow.textContent=editingId?"EDITAR CADASTRO":"NOVO CADASTRO";
+  modalTitle.textContent=editingId?"Editar paciente":"Novo paciente";
+  savePatientBtn.textContent=editingId?"Salvar alterações":"Salvar paciente";
   message.textContent="";
   modal.classList.add("open");
+  if(patient){["full_name","preferred_name","birth_date","sex","cpf","rg","phone","email","address","city","state","school_name","school_grade","photo_path","notes","status"].forEach(k=>{const el=document.getElementById(k);if(el)el.value=patient[k]??""});}
   document.getElementById("full_name").focus();
 }
-function closeModal(){modal.classList.remove("open");}
+function closeModal(){modal.classList.remove("open");editingId=null;}
 
 form.addEventListener("submit",async e=>{
   e.preventDefault();
@@ -92,11 +99,13 @@ form.addEventListener("submit",async e=>{
     school_name:document.getElementById("school_name").value.trim()||null,
     school_grade:document.getElementById("school_grade").value.trim()||null,
     notes:document.getElementById("notes").value.trim()||null,
-    photo_path:document.getElementById("photo_path").value.trim()||null
+    photo_path:document.getElementById("photo_path").value.trim()||null,
+    status:document.getElementById("status").value||"active"
   };
   if(!payload.full_name){message.textContent="Informe o nome completo.";return;}
-  const {data,error}=await supabase.from("psico_patients").insert(payload).select().single();
-  if(!error && data){
+  let data=null,error=null;
+  if(editingId){const r=await supabase.from("psico_patients").update(payload).eq("id",editingId).select().single();data=r.data;error=r.error;}else{const r=await supabase.from("psico_patients").insert(payload).select().single();data=r.data;error=r.error;}
+  if(!error && data && !editingId){
     const guardians=[];
     for(const n of [1,2]){
       const name=document.getElementById("g"+n+"_name").value.trim();
@@ -109,13 +118,14 @@ form.addEventListener("submit",async e=>{
     if(guardians.length){const rr=await supabase.from("psico_patient_guardians").insert(guardians);if(rr.error){message.textContent="Paciente salvo, mas não foi possível vincular os responsáveis: "+rr.error.message;return}}
   }
   if(error){message.textContent="Erro ao salvar: "+error.message;return;}
-  patients.push(data);
+  if(editingId){const i=patients.findIndex(x=>x.id===editingId);if(i>=0)patients[i]=data;}else patients.push(data);
   patients.sort((a,b)=>a.full_name.localeCompare(b.full_name));
   closeModal();
   render();
 });
 
 search.addEventListener("input",render);
+list.addEventListener("click",e=>{const b=e.target.closest(".edit-patient");if(!b)return;const p=patients.find(x=>x.id===decodeURIComponent(b.dataset.id));if(p)openModal(p);});
 newBtn.addEventListener("click",openModal);
 closeBtn.addEventListener("click",closeModal);
 modal.addEventListener("click",e=>{if(e.target===modal)closeModal();});
