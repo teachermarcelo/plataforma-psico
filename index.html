@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Plataforma Psicopedagógica</title><link rel="stylesheet" href="css/style.css">
+<title>Plataforma Psicopedagógica</title><link rel="stylesheet" href="css/style.css"><style>.dashboard-stats{grid-template-columns:repeat(4,1fr)}.dashboard-bottom{margin-top:18px}.recent-item{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #eee3e6;font-size:13px}.recent-item:last-child{border-bottom:0}.recent-item small{display:block;color:#85737a;margin-top:3px}@media(max-width:900px){.dashboard-stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.dashboard-stats{grid-template-columns:1fr}}</style>
 </head>
 <body>
 <div class="app-shell">
@@ -11,8 +11,17 @@
 <div class="admin-link"><a href="admin/index.html">🔐 <span>Admin</span></a></div></aside>
 <main class="main"><header class="topbar"><div><p class="eyebrow">GESTÃO PSICOPEDAGÓGICA</p><h1>Dashboard</h1></div><div class="top-actions"><a class="profile-mini" href="profissional.html"><img src="assets/profissional.png" alt="Foto da profissional"><span>Profissional</span></a></div></header>
 <section class="welcome"><div><p class="eyebrow">VISÃO GERAL</p><h2>Bem-vinda à sua plataforma.</h2><p>Organize pacientes, avaliações, intervenções, sessões, documentos e materiais em um único lugar.</p></div><a class="btn" href="pacientes.html">Ver pacientes</a></section>
-<section class="cards"><div class="stat"><span>Pacientes ativos</span><strong>0</strong><small>Carregando...</small></div><div class="stat"><span>Sessões</span><strong>0</strong><small>Carregando...</small></div><div class="stat"><span>Documentos</span><strong>0</strong><small>Carregando...</small></div><div class="stat"><span>Materiais</span><strong>0</strong><small>Carregando...</small></div></section>
+<section class="cards dashboard-stats">
+<div class="stat"><span>Pacientes ativos</span><strong id="statPatients">0</strong><small>Pacientes ativos</small></div>
+<div class="stat"><span>Avaliações</span><strong id="statAssessments">0</strong><small>Registros cadastrados</small></div>
+<div class="stat"><span>Planos de intervenção</span><strong id="statPlans">0</strong><small>Planos cadastrados</small></div>
+<div class="stat"><span>Sessões</span><strong id="statSessions">0</strong><small>Atendimentos registrados</small></div>
+<div class="stat"><span>Evoluções</span><strong id="statProgress">0</strong><small>Registros de evolução</small></div>
+<div class="stat"><span>Agendamentos</span><strong id="statAppointments">0</strong><small>Compromissos cadastrados</small></div>
+<div class="stat"><span>Documentos</span><strong id="statDocuments">0</strong><small>Documentos do prontuário</small></div>
+<div class="stat"><span>Escalas / respostas</span><strong id="statScales">0</strong><small>Aplicações registradas</small></div>
+</section>
 <section class="grid-2"><article class="panel"><div class="panel-head"><div><p class="eyebrow">ACESSO RÁPIDO</p><h3>Principais módulos</h3></div></div><div class="quick-grid"><a href="pacientes.html">👤<b>Pacientes</b><small>Cadastro e prontuários</small></a><a href="avaliacao.html">📋<b>Avaliação</b><small>Registros e resultados</small></a><a href="intervencao.html">🎯<b>Intervenção</b><small>Planos e objetivos</small></a><a href="materiais.html">📚<b>Materiais</b><small>Biblioteca profissional</small></a></div></article>
 <article class="panel professional-card"><div class="panel-head"><div><p class="eyebrow">PERFIL</p><h3>Profissional</h3></div><a href="profissional.html">Editar</a></div><div class="person"><img src="assets/profissional.png" alt="Foto da profissional"><div><h4>Profissional responsável</h4><p>Psicopedagogia</p><a href="profissional.html">Ver perfil completo →</a></div></div></article></section>
 <footer>Plataforma Psicopedagógica · versão inicial</footer></main></div>
-<script type="module" src="js/dashboard.js?v=2"></script></body></html>
+<script type="module" src="js/dashboard.js?v=3"></script></body></html>
