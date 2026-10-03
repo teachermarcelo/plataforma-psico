@@ -4,3 +4,43 @@
 .panel,.stat{box-shadow:0 8px 28px rgba(74,43,52,.045)}
 .quick-grid a:hover{border-color:#d6a9b4;background:#fdf8f9}
 .sidebar nav .active{background:linear-gradient(90deg,#3a2930,#2b2025);box-shadow:inset 3px 0 #b86a7b}
+
+
+/* RESPONSIVIDADE ESPAÇO GRAÇA */
+@media (max-width:700px){
+  .app-shell{display:block}
+  .sidebar{position:sticky;top:0;z-index:100;width:100%;height:auto;min-height:0;padding:8px 10px;display:block;box-shadow:0 4px 16px rgba(33,24,29,.18)}
+  .brand{display:none}
+  .sidebar nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+  .sidebar nav::-webkit-scrollbar{display:none}
+  .sidebar nav a{flex:0 0 auto;white-space:nowrap;padding:9px 11px;font-size:12px}
+  .sidebar nav span{display:inline}
+  .admin-link{display:none}
+  .main{margin-left:0;width:100%;padding:16px 12px}
+  .topbar{gap:10px;align-items:flex-start;margin-bottom:18px}
+  .topbar h1{font-size:25px}
+  .top-actions{flex-wrap:wrap}
+  .welcome{padding:20px;border-radius:15px}
+  .welcome h2{font-size:23px}
+  .cards{grid-template-columns:1fr 1fr;gap:10px}
+  .stat{padding:14px}
+  .stat strong{font-size:24px}
+  .grid-2,.profile-grid{grid-template-columns:1fr}
+  .panel{padding:16px}
+  .search{flex-direction:column;align-items:stretch}
+  .search input{max-width:none}
+  .form-grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  .profile-hero{padding:18px}
+  .quick-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:430px){
+  .main{padding:12px 9px}
+  .cards,.quick-grid{grid-template-columns:1fr}
+  .topbar{flex-direction:column}
+  .top-actions{width:100%}
+  .top-actions .btn,.topbar>.btn{width:100%}
+  .welcome .btn{width:100%;text-align:center}
+  .panel{padding:14px}
+  .btn{padding:11px 13px}
+}
