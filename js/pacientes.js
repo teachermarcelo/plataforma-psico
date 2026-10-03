@@ -9,6 +9,7 @@ const access = document.getElementById("accessMessage");
 const newBtn = document.getElementById("newPatientBtn");
 const closeBtn = document.getElementById("closePatientBtn");
 const count = document.getElementById("patientCount");
+const filter = document.getElementById("patientFilter");
 const modalTitle=document.getElementById("modalTitle"), modalEyebrow=document.getElementById("modalEyebrow"), savePatientBtn=document.getElementById("savePatientBtn");
 
 let patients = [];
@@ -27,10 +28,10 @@ function esc(v=""){
 
 function render(){
   const q=(search.value||"").trim().toLowerCase();
-  const rows=patients.filter(p=>
-    (p.full_name||"").toLowerCase().includes(q) ||
+  const rows=patients.filter(p=>(filter.value==="all"||p.status===filter.value) &&
+    ((p.full_name||"").toLowerCase().includes(q) ||
     (p.preferred_name||"").toLowerCase().includes(q) ||
-    (p.school_name||"").toLowerCase().includes(q)
+    (p.school_name||"").toLowerCase().includes(q))
   );
   count.textContent=patients.length;
   if(!rows.length){
@@ -46,7 +47,7 @@ function render(){
         <small>${p.city?esc(p.city):""}${p.school_grade?" · "+esc(p.school_grade):""}</small>
       </div>
       <span class="status ${p.status==="archived"?"archived":""}">${p.status==="archived"?"Arquivado":"Ativo"}</span>
-      <div><a class="btn small" href="paciente.html?id=${encodeURIComponent(p.id)}">Prontuário →</a> <button class="btn small secondary edit-patient" data-id="${encodeURIComponent(p.id)}" type="button">Editar</button></div>
+      <div><a class="btn small" href="paciente.html?id=${encodeURIComponent(p.id)}">Prontuário →</a> <button class="btn small secondary edit-patient" data-id="${encodeURIComponent(p.id)}" type="button">Editar</button> <button class="btn small ${p.status==="archived"?"":"secondary"} toggle-archive" data-id="${encodeURIComponent(p.id)}" type="button">${p.status==="archived"?"Reativar":"Arquivar"}</button> <button class="btn small danger delete-patient" data-id="${encodeURIComponent(p.id)}" type="button">Excluir</button></div>
     </article>`).join("");
 }
 
@@ -125,7 +126,25 @@ form.addEventListener("submit",async e=>{
 });
 
 search.addEventListener("input",render);
-list.addEventListener("click",e=>{const b=e.target.closest(".edit-patient");if(!b)return;const p=patients.find(x=>x.id===decodeURIComponent(b.dataset.id));if(p)openModal(p);});
+filter.addEventListener("change",render);
+list.addEventListener("click",async e=>{
+ const edit=e.target.closest(".edit-patient"); if(edit){const p=patients.find(x=>x.id===decodeURIComponent(edit.dataset.id));if(p)openModal(p);return;}
+ const arch=e.target.closest(".toggle-archive"); if(arch){const p=patients.find(x=>x.id===decodeURIComponent(arch.dataset.id));if(!p)return;
+   const archived=p.status!=="archived";
+   const msg=archived?\`Arquivar ${p.full_name}? O prontuário será preservado e ficará disponível em “Arquivados” por 5 anos.\`:\`Reativar ${p.full_name}?\`;
+   if(!confirm(msg))return;
+   const payload=archived?{status:"archived",archived_at:new Date().toISOString(),retention_until:new Date(Date.now()+5*365.25*86400000).toISOString().slice(0,10)}:{status:"active",archived_at:null,retention_until:null};
+   const r=await supabase.from("psico_patients").update(payload).eq("id",p.id).select().single();
+   if(r.error){alert("Não foi possível atualizar: "+r.error.message);return} Object.assign(p,r.data);render();return;
+ }
+ const del=e.target.closest(".delete-patient"); if(del){const p=patients.find(x=>x.id===decodeURIComponent(del.dataset.id));if(!p)return;
+   const confirmName=prompt(\`EXCLUSÃO DEFINITIVA\\n\\nIsso apagará o paciente e os registros vinculados. Esta ação não pode ser desfeita.\\n\\nDigite o nome completo do paciente para confirmar:\\n${p.full_name}\`);
+   if(confirmName!==p.full_name)return;
+   const r=await supabase.from("psico_patients").delete().eq("id",p.id);
+   if(r.error){alert("Não foi possível excluir: "+r.error.message);return}
+   patients=patients.filter(x=>x.id!==p.id);render();alert("Paciente excluído definitivamente.");
+ }
+});
 newBtn.addEventListener("click",openModal);
 closeBtn.addEventListener("click",closeModal);
 modal.addEventListener("click",e=>{if(e.target===modal)closeModal();});
