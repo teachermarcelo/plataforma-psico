@@ -44,7 +44,7 @@ function render(){
       <div class="patient-info">
         <h3>${esc(p.full_name)}</h3>
         <p>${p.preferred_name?esc(p.preferred_name)+" · ":""}${p.school_name?esc(p.school_name):"Paciente"}</p>
-        <small>${p.city?esc(p.city):""}${p.school_grade?" · "+esc(p.school_grade):""}</small>
+        <small>${p.city?esc(p.city):""}${p.school_grade?" · "+esc(p.school_grade):""}${p.status==="archived"&&p.retention_until?" · Retenção até "+new Date(p.retention_until+"T00:00:00").toLocaleDateString("pt-BR"):""}</small>
       </div>
       <span class="status ${p.status==="archived"?"archived":""}">${p.status==="archived"?"Arquivado":"Ativo"}</span>
       <div><a class="btn small" href="paciente.html?id=${encodeURIComponent(p.id)}">Prontuário →</a> <button class="btn small secondary edit-patient" data-id="${encodeURIComponent(p.id)}" type="button">Editar</button> <button class="btn small ${p.status==="archived"?"":"secondary"} toggle-archive" data-id="${encodeURIComponent(p.id)}" type="button">${p.status==="archived"?"Reativar":"Arquivar"}</button> <button class="btn small danger delete-patient" data-id="${encodeURIComponent(p.id)}" type="button">Excluir</button></div>
@@ -140,7 +140,7 @@ list.addEventListener("click",async e=>{
  const del=e.target.closest(".delete-patient"); if(del){const p=patients.find(x=>x.id===decodeURIComponent(del.dataset.id));if(!p)return;
    const confirmName=prompt(\`EXCLUSÃO DEFINITIVA\\n\\nIsso apagará o paciente e os registros vinculados. Esta ação não pode ser desfeita.\\n\\nDigite o nome completo do paciente para confirmar:\\n${p.full_name}\`);
    if(confirmName!==p.full_name)return;
-   const r=await supabase.from("psico_patients").delete().eq("id",p.id);
+   const pf=await supabase.from("psico_patient_files").select("file_path").eq("patient_id",p.id); const docs=await supabase.from("psico_documents").select("file_path").eq("patient_id",p.id); const photo=p.photo_path?[p.photo_path]:[]; const patientFiles=(pf.data||[]).map(x=>x.file_path).filter(Boolean); const docFiles=(docs.data||[]).map(x=>x.file_path).filter(Boolean); if(patientFiles.length||photo.length)await supabase.storage.from("psico-patient-files").remove([...patientFiles,...photo]); if(docFiles.length)await supabase.storage.from("psico-patient-documents").remove(docFiles); const r=await supabase.from("psico_patients").delete().eq("id",p.id);
    if(r.error){alert("Não foi possível excluir: "+r.error.message);return}
    patients=patients.filter(x=>x.id!==p.id);render();alert("Paciente excluído definitivamente.");
  }
