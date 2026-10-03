@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-const id=new URLSearchParams(location.search).get("patient_id");
+const qs=new URLSearchParams(location.search);let id=qs.get("patient_id")||sessionStorage.getItem("psico_patient_id");if(!id&&document.referrer){try{const u=new URL(document.referrer);id=u.searchParams.get("patient_id")||u.searchParams.get("id")}catch(e){}}if(id)sessionStorage.setItem("psico_patient_id",id);
 const $=x=>document.getElementById(x);
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 let plans=[],activities=[];
