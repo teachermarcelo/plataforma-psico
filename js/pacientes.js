@@ -28,12 +28,12 @@ function esc(v=""){
 
 function render(){
   const q=(search.value||"").trim().toLowerCase();
-  const rows=patients.filter(p=>(filter.value==="all"||p.status===filter.value) &&
+  const rows=patients.filter(p=>((filter.value==="all") || (filter.value==="active" && (p.status==="active" || !p.status)) || (filter.value==="archived" && p.status==="archived")) &&
     ((p.full_name||"").toLowerCase().includes(q) ||
     (p.preferred_name||"").toLowerCase().includes(q) ||
     (p.school_name||"").toLowerCase().includes(q))
   );
-  count.textContent=patients.length;
+  count.textContent=rows.length;
   if(!rows.length){
     list.innerHTML='<div class="empty"><div>👤</div><h3>Nenhum paciente cadastrado</h3><p>Clique em “+ Novo paciente” para cadastrar o primeiro paciente.</p></div>';
     return;
@@ -62,10 +62,12 @@ async function load(){
   access.hidden=true;
   const {data,error}=await supabase.from("psico_patients").select("*").order("full_name",{ascending:true});
   if(error){
-    list.innerHTML='<div class="empty"><h3>Não foi possível carregar os pacientes.</h3><p>Verifique o acesso administrativo e tente novamente.</p></div>';
+    console.error("Erro ao carregar pacientes:",error);
+    list.innerHTML=`<div class="empty"><h3>Não foi possível carregar os pacientes.</h3><p>${esc(error.message||"Erro de acesso ao Supabase.")}</p></div>`;
+    count.textContent="0";
     return;
   }
-  patients=data||[];
+  patients=(data||[]).map(p=>({...p,status:p.status||"active"}));
   render();
 }
 
