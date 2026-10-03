@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Materiais | Plataforma Psicopedagógica</title><link rel="stylesheet" href="css/style.css"></head>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Materiais | Plataforma Psicopedagógica</title><link rel="stylesheet" href="css/style.css"><style>.context{background:#fff;border:1px solid #eadfe3;border-left:4px solid #9b5268;border-radius:15px;padding:13px 16px;margin-top:18px}.context strong{display:block;font-size:17px}.context small{color:#85737a}.context-actions{margin-top:8px;display:flex;gap:7px;flex-wrap:wrap}</style></head>
 <body><div class="app-shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">PG</span><div><strong>Plataforma</strong><small>Psicopedagógica</small></div></div>
 <nav>
 <a href="index.html" class="">⌂ <span>Dashboard</span></a>
@@ -15,6 +15,16 @@
 <a href="profissional.html" class="">♙ <span>Profissional</span></a>
 </nav><div class="admin-link"><a href="admin/index.html">🔐 <span>Admin</span></a></div></aside>
 <main class="main"><header class="topbar"><div><p class="eyebrow">BIBLIOTECA</p><h1>Materiais</h1></div><a class="btn secondary" href="index.html">← Dashboard</a></header>
-<section class="welcome"><div><p class="eyebrow">MÓDULO</p><h2>📚 Materiais</h2><p>Acesse atividades, jogos, fichas, avaliações e materiais profissionais.</p></div><a class="btn" href="admin/materiais.html">Gerenciar materiais →</a></section>
+<section class="context"><span>👤 PACIENTE ATIVO</span><strong id="contextName">Nenhum paciente selecionado</strong><small id="contextHint">Selecione um paciente no prontuário para trabalhar com os materiais deste atendimento.</small><div class="context-actions"><a class="btn secondary" id="ctxCentral">Prontuário</a><a class="btn secondary" id="ctxAnam">Anamnese</a><a class="btn secondary" id="ctxAval">Avaliação</a><a class="btn secondary" id="ctxInterv">Intervenção</a><a class="btn secondary" id="ctxSess">Sessões</a><a class="btn secondary" id="ctxEvol">Evolução</a></div></section><section class="welcome"><div><p class="eyebrow">MÓDULO</p><h2>📚 Materiais</h2><p>Acesse atividades, jogos, fichas, avaliações e materiais profissionais.</p></div><a class="btn" href="admin/materiais.html">Gerenciar materiais →</a></section>
 <section class="panel" style="margin-top:20px"><div class="panel-head"><div><p class="eyebrow">PLATAFORMA</p><h3>Área preparada</h3></div></div><div class="empty" style="padding:55px 20px"><div>📚</div><h3>Este módulo já está disponível</h3><p>A interface foi criada e está pronta para receber os dados do Supabase.</p></div></section>
-<footer>Plataforma Psicopedagógica · Materiais</footer></main></div></body></html>
+<footer>Plataforma Psicopedagógica · Materiais</footer></main></div><script type="module">
+import {supabase} from "./js/supabase.js";
+const pid=new URLSearchParams(location.search).get("patient_id")||sessionStorage.getItem("psico_patient_id")||localStorage.getItem("psico_patient_id");
+const links={ctxCentral:"paciente-central.html",ctxAnam:"anamnese.html",ctxAval:"avaliacao.html",ctxInterv:"intervencao.html",ctxSess:"sessoes.html",ctxEvol:"evolucao.html"};
+if(pid){
+ sessionStorage.setItem("psico_patient_id",pid);localStorage.setItem("psico_patient_id",pid);
+ Object.entries(links).forEach(([k,u])=>document.getElementById(k).href=u+"?patient_id="+encodeURIComponent(pid));
+ const r=await supabase.from("psico_patients").select("full_name").eq("id",pid).maybeSingle();
+ if(r.data){document.getElementById("contextName").textContent=r.data.full_name;document.getElementById("contextHint").textContent="Materiais vinculados a este prontuário."}
+}
+</script></body></html>
