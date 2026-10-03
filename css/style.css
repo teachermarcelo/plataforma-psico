@@ -161,3 +161,85 @@
   }
   .admin-link{display:none}
 }
+
+/* SIDEBAR FINAL OVERRIDE — prioridade máxima */
+.sidebar{
+  background:#5b2638 !important;
+  background:linear-gradient(180deg,#5b2638 0%,#401d2a 100%) !important;
+  width:245px !important;
+  height:100vh !important;
+  max-height:100vh !important;
+  overflow-y:scroll !important;
+  overflow-x:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+  flex-shrink:0 !important;
+  scrollbar-width:auto !important;
+  scrollbar-color:#d08a9d #3b1b27 !important;
+}
+.sidebar::-webkit-scrollbar{width:10px !important}
+.sidebar::-webkit-scrollbar-track{background:#3b1b27 !important}
+.sidebar::-webkit-scrollbar-thumb{
+  background:#c36a82 !important;
+  border-radius:10px !important;
+  border:2px solid #3b1b27 !important;
+}
+.sidebar::-webkit-scrollbar-thumb:hover{background:#e09aad !important}
+.sidebar .brand{
+  flex:0 0 auto !important;
+  background:transparent !important;
+}
+.sidebar nav{
+  flex:0 0 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:5px !important;
+  overflow:visible !important;
+}
+.sidebar nav a,
+.sidebar .admin-link a{
+  background:transparent !important;
+  color:#f8e9ee !important;
+  border:1px solid transparent !important;
+}
+.sidebar nav a:hover,
+.sidebar .admin-link a:hover{
+  background:#a94f69 !important;
+  color:#fff !important;
+  border-color:#d08096 !important;
+  transform:translateX(3px) !important;
+  box-shadow:0 5px 14px rgba(20,5,12,.25) !important;
+}
+.sidebar nav a:active,
+.sidebar .admin-link a:active{
+  background:#c66b84 !important;
+  color:#fff !important;
+}
+.sidebar nav a.active{
+  background:#87384f !important;
+  color:#fff !important;
+  border-color:#c8788e !important;
+  box-shadow:inset 4px 0 #efb0c0,0 5px 14px rgba(20,5,12,.20) !important;
+}
+.sidebar .admin-link{
+  flex:0 0 auto !important;
+  margin-top:16px !important;
+  border-top:1px solid rgba(255,255,255,.20) !important;
+}
+@media(max-width:900px) and (min-width:701px){
+  .sidebar{width:74px !important}
+}
+@media(max-width:700px){
+  .sidebar{
+    width:100% !important;
+    height:auto !important;
+    max-height:76px !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+  }
+  .sidebar nav{
+    flex-direction:row !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+  }
+}
