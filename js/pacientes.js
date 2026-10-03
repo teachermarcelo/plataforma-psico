@@ -28,7 +28,8 @@ function esc(v=""){
 
 function render(){
   const q=(search.value||"").trim().toLowerCase();
-  const rows=patients.filter(p=>((filter.value==="all") || (filter.value==="active" && (p.status==="active" || !p.status)) || (filter.value==="archived" && p.status==="archived")) &&
+  const currentFilter=filter?.value||"active";
+  const rows=patients.filter(p=>((currentFilter==="all") || (currentFilter==="active" && (p.status!=="archived")) || (currentFilter==="archived" && p.status==="archived")) &&
     ((p.full_name||"").toLowerCase().includes(q) ||
     (p.preferred_name||"").toLowerCase().includes(q) ||
     (p.school_name||"").toLowerCase().includes(q))
@@ -60,7 +61,7 @@ async function load(){
     return;
   }
   access.hidden=true;
-  const {data,error}=await supabase.from("psico_patients").select("*").order("full_name",{ascending:true});
+  const {data,error}=await supabase.from("psico_patients").select("id,full_name,preferred_name,birth_date,sex,cpf,rg,phone,email,address,city,state,school_name,school_grade,photo_path,notes,status,created_at,updated_at,archived_at,retention_until").order("full_name",{ascending:true});
   if(error){
     console.error("Erro ao carregar pacientes:",error);
     list.innerHTML=`<div class="empty"><h3>Não foi possível carregar os pacientes.</h3><p>${esc(error.message||"Erro de acesso ao Supabase.")}</p></div>`;
