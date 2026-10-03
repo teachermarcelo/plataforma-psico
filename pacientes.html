@@ -13,7 +13,7 @@
 </nav><div class="admin-link"><a href="admin/index.html">🔐 <span>Admin</span></a></div></aside>
 <main class="main"><header class="topbar"><div><p class="eyebrow">GESTÃO DE PACIENTES</p><h1>Pacientes</h1></div><button class="btn" id="newPatientBtn">+ Novo paciente</button></header>
 <div class="access" id="accessMessage" hidden><strong>🔒 Área protegida</strong><br>Para visualizar e cadastrar pacientes, entre primeiro na área administrativa.<br><a href="admin/index.html">Ir para o Admin →</a></div>
-<section class="panel"><div class="search"><input id="patientSearch" placeholder="Pesquisar paciente..."><span><strong id="patientCount">0</strong> paciente(s)</span></div><div id="patientList" class="patient-list"></div></section>
+<section class="panel"><div class="search"><input id="patientSearch" placeholder="Pesquisar paciente..."><select id="patientFilter" style="max-width:180px"><option value="active">Ativos</option><option value="archived">Arquivados</option><option value="all">Todos</option></select><span><strong id="patientCount">0</strong> paciente(s)</span></div><div id="patientList" class="patient-list"></div></section>
 <footer>Plataforma Psicopedagógica · Pacientes</footer></main></div>
 <div class="modal" id="patientModal"><div class="modal-card"><div class="modal-head"><div><p class="eyebrow" id="modalEyebrow">NOVO CADASTRO</p><h2 id="modalTitle">Novo paciente</h2></div><button class="close" id="closePatientBtn">✕</button></div>
 <form id="patientForm"><div class="form-grid">
@@ -22,10 +22,10 @@
 <label>CPF<input id="cpf"></label><label>RG<input id="rg"></label><label>Telefone<input id="phone"></label>
 <label>E-mail<input id="email" type="email"></label><label>Endereço<input id="address"></label><label>Cidade<input id="city"></label>
 <label>Estado<input id="state" maxlength="2" placeholder="PR"></label><label>Escola<input id="school_name"></label>
-<label>Ano/Série<input id="school_grade"></label><label>Status<select id="status"><option value="active">Ativo</option><option value="archived">Arquivado</option></select></label><label>Status<select id="status"><option value="active">Ativo</option><option value="archived">Arquivado</option></select></label><label>Foto do paciente (URL)<input id="photo_path" placeholder="Opcional"></label>
+<label>Ano/Série<input id="school_grade"></label><label>Status<select id="status"><option value="active">Ativo</option><option value="archived">Arquivado</option></select></label><label>Foto do paciente (URL)<input id="photo_path" placeholder="Opcional"></label>
 <label class="full">Observações gerais<textarea id="notes"></textarea></label>
 <div class="full form-section"><strong>👨‍👩‍👧 Responsáveis</strong><small>Cadastre pai, mãe, responsável legal ou outro cuidador. Você poderá adicionar mais responsáveis no prontuário.</small></div>
 <label>Responsável 1 — nome<input id="g1_name"></label><label>Parentesco<input id="g1_relationship" placeholder="Mãe, pai, avó..."></label><label>CPF do responsável<input id="g1_cpf"></label><label>Telefone do responsável<input id="g1_phone"></label><label>E-mail do responsável<input id="g1_email" type="email"></label><label>Responsável legal? <select id="g1_legal"><option value="false">Não</option><option value="true">Sim</option></select></label>
 <label>Responsável 2 — nome<input id="g2_name"></label><label>Parentesco<input id="g2_relationship"></label><label>CPF do responsável<input id="g2_cpf"></label><label>Telefone do responsável<input id="g2_phone"></label><label>E-mail do responsável<input id="g2_email" type="email"></label><label>Responsável legal? <select id="g2_legal"><option value="false">Não</option><option value="true">Sim</option></select></label>
 </div><div class="form-message" id="patientMessage"></div><div class="form-actions"><button type="button" class="btn secondary" id="closePatientBtn2" onclick="document.getElementById('patientModal').classList.remove('open')">Cancelar</button><button class="btn" type="submit" id="savePatientBtn">Salvar paciente</button></div></form></div></div>
-<script type="module" src="js/pacientes.js?v=3"></script></body></html>
+<script type="module" src="js/pacientes.js?v=4"></script></body></html>
