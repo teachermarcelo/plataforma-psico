@@ -1,13 +1,7 @@
 import {supabase} from "./supabase.js";
-const stats={patients:document.querySelector(".stat:nth-child(1) strong"),sessions:document.querySelector(".stat:nth-child(2) strong"),documents:document.querySelector(".stat:nth-child(3) strong"),materials:document.querySelector(".stat:nth-child(4) strong")};
-const subs=[["patients","psico_patients", "status"],["sessions","psico_sessions"],["documents","psico_documents"],["materials","psico_materials"]];
+const stats={patients:document.getElementById("statPatients"),assessments:document.getElementById("statAssessments"),plans:document.getElementById("statPlans"),sessions:document.getElementById("statSessions"),progress:document.getElementById("statProgress"),appointments:document.getElementById("statAppointments"),documents:document.getElementById("statDocuments"),scales:document.getElementById("statScales")};
+const subs=[["patients","psico_patients","status"],["assessments","psico_assessments"],["plans","psico_intervention_plans"],["sessions","psico_sessions"],["progress","psico_progress_records"],["appointments","psico_appointments"],["documents","psico_documents"],["scales","psico_scale_applications"]];
 async function count(key,table,statusCol){let q=supabase.from(table).select("id",{count:"exact",head:true});if(statusCol)q=q.eq(statusCol,"active");const {count,error}=await q;if(error){console.error(table,error);stats[key].textContent="0";}else stats[key].textContent=count??0;}
-async function load(){
- await Promise.all(subs.map(x=>count(...x)));
- const labels=document.querySelectorAll(".stat small");
- labels[0].textContent="Pacientes cadastrados como ativos";
- labels[1].textContent="Atendimentos registrados";
- labels[2].textContent="Documentos do prontuário";
- labels[3].textContent="Materiais cadastrados";
-}
+async function load(){await Promise.all(subs.map(x=>count(...x))); await recent();}
+async function recent(){const box=document.getElementById("recentActivity");const rows=[];const sources=[["psico_patients","Pacientes","full_name","created_at"],["psico_sessions","Sessões","session_number","created_at"],["psico_assessments","Avaliações","title","created_at"],["psico_progress_records","Evoluções","area","created_at"]];for(const [table,label,field,date] of sources){const r=await supabase.from(table).select(`id,${field},${date}`).order(date,{ascending:false}).limit(2);(r.data||[]).forEach(x=>rows.push({label,name:x[field]||"Registro",date:x[date]}))}rows.sort((a,b)=>new Date(b.date)-new Date(a.date));box.innerHTML=rows.slice(0,6).map(x=>`<div class="recent-item"><div><b>${x.label}</b><small>${String(x.name)}</small></div><small>${x.date?new Date(x.date).toLocaleDateString("pt-BR"):"—"}</small></div>`).join("")||"<p class="muted">Nenhuma atividade registrada ainda.</p>";}
 load();
