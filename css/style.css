@@ -44,3 +44,120 @@
   .panel{padding:14px}
   .btn{padding:11px 13px}
 }
+/* ESPAÇO GRAÇA · SIDEBAR V2
+   Navegação vertical com rolagem própria e identidade Marsala */
+:root{
+  --wine:#7f3047;
+  --wine-2:#963f59;
+  --wine-3:#b45b72;
+  --wine-soft:#3b222b;
+  --sidebar-bg:#21171c;
+}
+.sidebar{
+  width:245px;
+  height:100vh;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:linear-gradient(180deg,#21171c 0%,#26191f 100%);
+  border-right:1px solid rgba(180,91,114,.18);
+  padding:20px 12px 14px;
+  scrollbar-width:thin;
+  scrollbar-color:#713043 transparent;
+  z-index:1000;
+}
+.sidebar::-webkit-scrollbar{width:7px}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.sidebar::-webkit-scrollbar-thumb{background:#713043;border-radius:20px}
+.sidebar::-webkit-scrollbar-thumb:hover{background:#a44d66}
+.sidebar nav{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  padding-bottom:12px;
+}
+.sidebar nav a,
+.admin-link a{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-height:40px;
+  padding:10px 12px;
+  border:1px solid transparent;
+  border-radius:10px;
+  color:#eee2e6;
+  font-size:13px;
+  font-weight:600;
+  transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease;
+}
+.sidebar nav a:hover,
+.admin-link a:hover{
+  background:linear-gradient(90deg,var(--wine),var(--wine-2));
+  color:#fff;
+  border-color:rgba(255,255,255,.10);
+  transform:translateX(2px);
+  box-shadow:0 5px 14px rgba(127,48,71,.25);
+}
+.sidebar nav a:active,
+.admin-link a:active{
+  background:var(--wine-3);
+  color:#fff;
+  transform:translateX(1px) scale(.985);
+}
+.sidebar nav a.active{
+  background:linear-gradient(90deg,#713043,#8f3c54);
+  color:#fff;
+  border-color:rgba(255,255,255,.08);
+  box-shadow:inset 4px 0 #d38a9c,0 5px 15px rgba(127,48,71,.20);
+}
+.sidebar nav a.active:hover{
+  background:linear-gradient(90deg,#963f59,#b45b72);
+}
+.admin-link{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid rgba(211,138,156,.18);
+}
+.admin-link a{color:#e6d1d7}
+.brand{padding-bottom:24px}
+.brand-mark{
+  background:linear-gradient(145deg,#b45b72,#7f3047);
+  box-shadow:0 8px 20px rgba(127,48,71,.32);
+}
+@media(max-width:900px){
+  .sidebar{
+    width:74px;
+    padding:16px 8px 12px;
+  }
+  .sidebar nav a,
+  .admin-link a{
+    justify-content:center;
+    min-height:42px;
+    padding:10px 7px;
+  }
+}
+@media(max-width:700px){
+  .sidebar{
+    position:sticky;
+    top:0;
+    width:100%;
+    height:auto;
+    max-height:76px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding:8px 10px;
+  }
+  .sidebar nav{
+    flex-direction:row;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding:0;
+  }
+  .sidebar nav a{
+    flex:0 0 auto;
+    justify-content:flex-start;
+    min-height:40px;
+  }
+  .admin-link{display:none}
+}
