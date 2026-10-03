@@ -305,3 +305,121 @@ input:focus,select:focus,textarea:focus{
   border-color:#a407f9 !important;
   box-shadow:0 0 0 3px rgba(164,7,249,.13) !important;
 }
+
+/* =========================================================
+   IDENTIDADE VISUAL GLOBAL — LAVANDA / LILÁS / ROXO / MAGENTA
+   Aplicada ao site inteiro sem alterar funcionalidades.
+   ========================================================= */
+:root{
+  --bg:#f7f3fb !important;
+  --card:#ffffff !important;
+  --text:#291b31 !important;
+  --muted:#725e78 !important;
+  --line:#eadff0 !important;
+  --accent:#a407f9 !important;
+  --accent2:#8f00e8 !important;
+  --dark:#3b2446 !important;
+  --soft:#ead9f7 !important;
+  --gold:#d997f5 !important;
+}
+body{
+  background:linear-gradient(135deg,#faf8fc 0%,#f4eef9 100%) !important;
+  color:#291b31 !important;
+}
+.sidebar{
+  background:linear-gradient(180deg,#4b245f 0%,#321b43 100%) !important;
+}
+.sidebar nav a,
+.admin-link a{
+  color:#f5eafd !important;
+}
+.sidebar nav a:hover,
+.admin-link a:hover{
+  background:linear-gradient(90deg,#a407f9,#c25af0) !important;
+  color:#fff !important;
+  border-color:#d997f5 !important;
+}
+.sidebar nav a.active{
+  background:linear-gradient(90deg,#8f00e8,#a407f9) !important;
+  color:#fff !important;
+  border-color:#d997f5 !important;
+  box-shadow:inset 4px 0 #e7b7f9,0 5px 15px rgba(164,7,249,.25) !important;
+}
+.brand-mark{
+  background:linear-gradient(145deg,#d997f5,#a407f9) !important;
+  box-shadow:0 8px 20px rgba(164,7,249,.28) !important;
+}
+.eyebrow{
+  color:#8f00e8 !important;
+}
+.btn,
+button.btn,
+a.btn{
+  background:linear-gradient(135deg,#a407f9,#8f00e8) !important;
+  border-color:#a407f9 !important;
+  color:#fff !important;
+  box-shadow:0 8px 18px rgba(164,7,249,.20) !important;
+}
+.btn:hover,
+button.btn:hover,
+a.btn:hover{
+  background:linear-gradient(135deg,#c25af0,#a407f9) !important;
+  box-shadow:0 11px 22px rgba(164,7,249,.28) !important;
+}
+.btn.secondary,
+button.btn.secondary,
+a.btn.secondary{
+  background:#fff !important;
+  color:#6f2989 !important;
+  border:1px solid #eadff0 !important;
+}
+.btn.secondary:hover,
+button.btn.secondary:hover,
+a.btn.secondary:hover{
+  background:#ead9f7 !important;
+  color:#4e205e !important;
+  border-color:#d997f5 !important;
+}
+.welcome{
+  background:linear-gradient(135deg,#3b2446 0%,#6d347f 55%,#a407f9 100%) !important;
+  color:#fff !important;
+}
+.welcome p:not(.eyebrow){
+  color:#f5eafa !important;
+}
+.stat,.panel,.profile-hero{
+  background:#fff !important;
+  border-color:#eadff0 !important;
+  box-shadow:0 8px 28px rgba(106,52,127,.07) !important;
+}
+.quick-grid a{
+  border-color:#eadff0 !important;
+}
+.quick-grid a:hover{
+  border-color:#d997f5 !important;
+  background:#faf5fd !important;
+}
+.chips span{
+  background:#ead9f7 !important;
+  color:#6f2989 !important;
+}
+input,textarea,select{
+  border-color:#eadff0 !important;
+  background:#fff !important;
+}
+input:focus,textarea:focus,select:focus{
+  border-color:#a407f9 !important;
+  box-shadow:0 0 0 3px rgba(164,7,249,.13) !important;
+}
+.privacy-note{
+  background:#faf5fd !important;
+  border-color:#ead9f7 !important;
+}
+footer{
+  color:#8a7290 !important;
+}
+/* Links e badges de status */
+a:hover{color:#8f00e8}
+.badge,.tag,.status{
+  border-color:#ead9f7 !important;
+}
