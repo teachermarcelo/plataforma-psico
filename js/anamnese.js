@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-const patientId=new URLSearchParams(location.search).get("patient_id")||sessionStorage.getItem("psico_patient_id");
+const patientId=new URLSearchParams(location.search).get("patient_id")||(sessionStorage.getItem("psico_patient_id")||localStorage.getItem("psico_patient_id"));
 const form=document.getElementById("anamnesisForm"), msg=document.getElementById("msg"), nameEl=document.getElementById("patientName"), access=document.getElementById("access");
 const fields=["main_complaint","pregnancy","birth","development","language_development","motor_development","feeding","sleep","medical_history","family_history","school_history","routine","behavior","learning_history","other_information"];
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
@@ -9,7 +9,7 @@ async function load(){
  if(!patientId){nameEl.textContent="Paciente não selecionado";form.style.display="none";return}
  const p=await supabase.from("psico_patients").select("full_name,preferred_name").eq("id",patientId).single();
  if(p.error){nameEl.textContent="Paciente não encontrado";form.style.display="none";return}
- nameEl.textContent=p.data.full_name;sessionStorage.setItem("psico_patient_id",patientId);document.getElementById("contextName").textContent=p.data.full_name;
+ nameEl.textContent=p.data.full_name;(sessionStorage.setItem("psico_patient_id",patientId),localStorage.setItem("psico_patient_id",patientId));document.getElementById("contextName").textContent=p.data.full_name;
  const a=await supabase.from("psico_anamneses").select("*").eq("patient_id",patientId).maybeSingle();
  if(a.data) fields.forEach(f=>{const el=document.getElementById(f);if(el)el.value=a.data[f]||""});
 }
