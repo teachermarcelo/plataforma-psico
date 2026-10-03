@@ -7,10 +7,10 @@ body{background:#f8f2f4}.record-page{max-width:1180px;margin:0 auto;padding:24px
 @media print{body{background:#fff}.record-page{max-width:none;padding:0}.toolbar{display:none}.record-meta,.section,.clinic-head{box-shadow:none;border:0}.question-row{break-inside:avoid}.clinic-head{border-radius:0}.extra .btn{display:none}}
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script></head><body>
 <main class="record-page">
-<header class="clinic-head"><div class="brand">ESPAÇO GRAÇA LTDA</div><p>Rua Jose Bonifacio de Andrade e Silva, 88 · Balsa Nova - PR</p><p>CNPJ: 51.787.023/0001-29</p></header>
+<header class="clinic-head" id="clinicHeader"><div class="brand">Carregando instituição...</div><p></p><p></p></header>
 <div class="toolbar"><button class="btn primary" id="save">Salvar observações</button><button class="btn secondary" id="print">🖨 Imprimir</button><button class="btn secondary" id="pdf">⬇ Baixar PDF</button><button class="btn secondary" onclick="history.back()">← Voltar</button><span id="msg" class="success"></span></div>
 <section class="record-meta"><div class="meta-grid" id="meta"></div></section>
 <section class="section"><div class="section-title"><h2>Questionário completo</h2><span id="count"></span></div><div id="questions"></div></section>
 <section class="section extra"><div class="section-title"><h2>Campos extras do profissional</h2><button class="btn secondary" id="addExtra">+ Adicionar campo</button></div><div id="extras"></div></section>
 <section class="section"><h2>Observação geral do profissional</h2><textarea id="generalNotes" rows="6" style="width:100%;box-sizing:border-box;border:1px solid #decfd5;border-radius:12px;padding:12px;font:inherit"></textarea></section>
-</main><script type="module" src="js/resposta-avaliacao.js"></script></body></html>
+</main><script type="module">import{loadClinicHeader}from"./js/document-brand.js";loadClinicHeader("clinicHeader");</script><script type="module" src="js/resposta-avaliacao.js?v=2"></script></body></html>
