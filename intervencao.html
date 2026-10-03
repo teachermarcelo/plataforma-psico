@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Intervenção | Plataforma Psicopedagógica</title><link rel="stylesheet" href="css/style.css"></head>
-<body><div class="app-shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">PG</span><div><strong>Plataforma</strong><small>Psicopedagógica</small></div></div>
-<nav>
-<a href="index.html" class="">⌂ <span>Dashboard</span></a>
-<a href="pacientes.html" class="">♙ <span>Pacientes</span></a>
-<a href="prontuarios.html" class="">▣ <span>Prontuários</span></a>
-<a href="avaliacao.html" class="">◫ <span>Avaliação</span></a>
-<a href="intervencao.html" class="active">✓ <span>Intervenção</span></a>
-<a href="sessoes.html" class="">◷ <span>Sessões</span></a>
-<a href="evolucao.html" class="">↗ <span>Evolução</span></a>
-<a href="documentos.html" class="">▤ <span>Documentos</span></a>
-<a href="agenda.html" class="">◴ <span>Agenda</span></a>
-<a href="materiais.html" class="">▥ <span>Materiais</span></a>
-<a href="profissional.html" class="">♙ <span>Profissional</span></a>
-</nav><div class="admin-link"><a href="admin/index.html">🔐 <span>Admin</span></a></div></aside>
-<main class="main"><header class="topbar"><div><p class="eyebrow">INTERVENÇÃO</p><h1>Intervenção</h1></div><a class="btn secondary" href="index.html">← Dashboard</a></header>
-<section class="welcome"><div><p class="eyebrow">MÓDULO</p><h2>🎯 Intervenção</h2><p>Planeje objetivos, atividades e estratégias de intervenção.</p></div><a class="btn" href="pacientes.html">Selecionar paciente →</a></section>
-<section class="panel" style="margin-top:20px"><div class="panel-head"><div><p class="eyebrow">PLATAFORMA</p><h3>Área preparada</h3></div></div><div class="empty" style="padding:55px 20px"><div>🎯</div><h3>Este módulo já está disponível</h3><p>A interface foi criada e está pronta para receber os dados do Supabase.</p></div></section>
-<footer>Plataforma Psicopedagógica · Intervenção</footer></main></div></body></html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Intervenção | Espaço Graça</title><link rel="stylesheet" href="css/style.css"><style>
+.hero{background:linear-gradient(135deg,#3a2930,#21181d);color:#fff;border-radius:20px;padding:24px;margin-bottom:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}.full{grid-column:1/-1}.row{display:flex;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid #eee5e8;padding:13px 0}.tag{font-size:10px;background:#f7eaf0;color:#7b3e50;border-radius:99px;padding:5px 8px;font-weight:800}.muted{color:#85737a;font-size:12px}.msg{font-size:12px;color:#8f485b;font-weight:700}.empty{padding:18px;text-align:center;color:#85737a}.actions{display:flex;gap:8px;flex-wrap:wrap}textarea{min-height:90px} @media(max-width:750px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style></head>
+<body><div class="app-shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">EG</span><div><strong>Espaço Graça</strong><small>Plataforma Psicopedagógica</small></div></div><nav>
+<a href="index.html">⌂ <span>Dashboard</span></a><a href="pacientes.html">♙ <span>Pacientes</span></a><a class="active" id="prontLink" href="paciente.html">▣ <span>Prontuário</span></a><a id="anamneseLink" href="#">☷ <span>Anamnese</span></a><a href="avaliacao.html">◫ <span>Avaliação</span></a><a class="active" href="intervencao.html">✓ <span>Intervenção</span></a><a href="sessoes.html">◷ <span>Sessões</span></a><a href="evolucao.html">↗ <span>Evolução</span></a><a href="documentos.html">▤ <span>Documentos</span></a><a href="agenda.html">◴ <span>Agenda</span></a><a href="escalas.html">▥ <span>Escalas</span></a><a href="profissional.html">♙ <span>Profissional</span></a></nav><div class="admin-link"><a href="admin/index.html">🔐 <span>Admin</span></a></div></aside>
+<main class="main"><header class="topbar"><div><p class="eyebrow">PRONTUÁRIO · INTERVENÇÃO</p><h1 id="patientName">Paciente</h1></div><a class="btn secondary" id="back" href="pacientes.html">← Pacientes</a></header>
+<section class="hero"><p class="eyebrow" style="color:#d7a3b0">ESPAÇO GRAÇA</p><h2>Plano de intervenção</h2><p>Defina objetivos, metas e atividades do atendimento psicopedagógico.</p></section>
+<section class="grid">
+<section class="card full"><p class="eyebrow">PLANO</p><h3>Novo plano de intervenção</h3><form id="planForm"><div class="grid">
+<label>Título do plano<input id="title" required placeholder="Ex.: Intervenção em leitura e escrita"></label>
+<label>Frequência<input id="frequency" placeholder="Ex.: 2 vezes por semana"></label>
+<label>Data de início<input id="start" type="date"></label><label>Data de revisão<input id="end" type="date"></label>
+<label>Status<select id="status"><option value="draft">Em planejamento</option><option value="active" selected>Em andamento</option><option value="completed">Concluído</option><option value="archived">Arquivado</option></select></label>
+<label class="full">Objetivo geral<textarea id="general" placeholder="Descreva o objetivo geral da intervenção..."></textarea></label>
+<label class="full">Observações<textarea id="notes" placeholder="Observações, estratégias gerais ou orientações..."></textarea></label>
+</div><div class="actions"><button class="btn">Salvar plano</button><span class="msg" id="planMsg"></span></div></form></section>
+<section class="card"><p class="eyebrow">PLANOS</p><h3>Planos cadastrados</h3><div id="plans"></div></section>
+<section class="card"><p class="eyebrow">OBJETIVOS</p><h3>Objetivos do plano</h3><form id="goalForm"><label>Plano<select id="goalPlan" required></select></label><label>Objetivo<textarea id="goal" required placeholder="Ex.: ampliar a compreensão leitora"></textarea></label><label>Área<input id="area" placeholder="Ex.: Leitura"></label><label>Prioridade<select id="priority"><option value="">Selecione</option><option>Alta</option><option>Média</option><option>Baixa</option></select></label><label>Indicador de progresso<textarea id="indicator" placeholder="Como observar o progresso?"></textarea></label><button class="btn">Adicionar objetivo</button></form><div id="goals"></div></section>
+<section class="card full"><p class="eyebrow">ATIVIDADES</p><h3>Atividades vinculadas ao plano</h3><form id="activityForm"><div class="grid"><label>Plano<select id="activityPlan" required></select></label><label>Atividade<select id="activity" required></select></label><label class="full">Observações<textarea id="activityNotes" placeholder="Como esta atividade será utilizada?"></textarea></label></div><button class="btn">Vincular atividade</button></form><div id="activities"></div></section>
+</div><footer>Espaço Graça · Intervenção</footer></main></div><script type="module" src="js/intervencao.js"></script></body></html>
