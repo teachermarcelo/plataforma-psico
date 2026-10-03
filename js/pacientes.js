@@ -133,7 +133,7 @@ list.addEventListener("click",async e=>{
  const edit=e.target.closest(".edit-patient"); if(edit){const p=patients.find(x=>x.id===decodeURIComponent(edit.dataset.id));if(p)openModal(p);return;}
  const arch=e.target.closest(".toggle-archive"); if(arch){const p=patients.find(x=>x.id===decodeURIComponent(arch.dataset.id));if(!p)return;
    const archived=p.status!=="archived";
-   const msg=archived?\`Arquivar ${p.full_name}? O prontuário será preservado e ficará disponível em “Arquivados” por 5 anos.\`:\`Reativar ${p.full_name}?\`;
+   const msg=archived?`Arquivar ${p.full_name}? O prontuário será preservado e ficará disponível em “Arquivados” por 5 anos.`:`Reativar ${p.full_name}?`;
    if(!confirm(msg))return;
    const payload=archived?{status:"archived",archived_at:new Date().toISOString(),retention_until:new Date(Date.now()+5*365.25*86400000).toISOString().slice(0,10)}:{status:"active",archived_at:null,retention_until:null};
    const r=await supabase.from("psico_patients").update(payload).eq("id",p.id).select().single();
