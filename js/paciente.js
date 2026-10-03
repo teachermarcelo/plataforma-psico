@@ -10,7 +10,7 @@ async function admin(){
  return !!data;
 }
 async function load(){
- if(id)sessionStorage.setItem("psico_patient_id",id);if(!id){root.innerHTML='<div class="empty"><h3>Paciente não informado.</h3></div>';return;}
+ if(id)(sessionStorage.setItem("psico_patient_id",id),localStorage.setItem("psico_patient_id",id));if(!id){root.innerHTML='<div class="empty"><h3>Paciente não informado.</h3></div>';return;}
  if(!(await admin())){access.hidden=false;root.innerHTML="";return;}
  const {data:p,error}=await supabase.from("psico_patients").select("*").eq("id",id).single();
  if(error){root.innerHTML='<div class="empty"><h3>Paciente não encontrado.</h3><p>Verifique o cadastro e tente novamente.</p></div>';return;}
